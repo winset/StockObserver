@@ -1,4 +1,4 @@
-package com.yandex.stockobserver.adapter
+package com.yandex.stockobserver.ui.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import com.yandex.stockobserver.genralInfo.CompanyInfo

@@ -1,5 +1,6 @@
-package com.yandex.stockobserver
+package com.yandex.stockobserver.api
 
+import com.yandex.stockobserver.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 
