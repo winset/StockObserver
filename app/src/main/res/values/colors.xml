@@ -8,6 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="black_text">#1A1A1A</color>
     <color name="green_text">#24B25D</color>
+    <color name="red_text">#B22424</color>
+    <color name="gray_text">#BABABA</color>
     <color name="white">#FFFFFFFF</color>
     <color name="company_background">#F0F4F7</color>
     <color name="star_off">#BABABA</color>

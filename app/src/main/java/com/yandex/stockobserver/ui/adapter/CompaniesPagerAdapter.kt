@@ -1,10 +1,9 @@
-package com.yandex.stockobserver.adapter
+package com.yandex.stockobserver.ui.adapter
 
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
-import androidx.viewpager.widget.ViewPager
 
 class CompaniesPagerAdapter(private val recyclers: List<RecyclerView>) : PagerAdapter() {
 

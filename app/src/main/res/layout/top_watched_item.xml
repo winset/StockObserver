@@ -15,8 +15,7 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_margin="8dp"
-        android:background="@color/black_text"
-        android:src="@drawable/aple"
+        tools:src="@drawable/aple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
