@@ -15,7 +15,8 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 class TopWatchedHolder(
     view: View,
     val onItemClick: (String) -> Unit,
-    val onFavoriteClick: (CompanyInfo) -> Unit
+    val onFavoriteClick: (CompanyInfo,Int,Boolean,Int) -> Unit,
+    val adapterHashCode:Int
 ) : RecyclerView.ViewHolder(view) {
     private val layout: ConstraintLayout = itemView.findViewById(R.id.top_background)
     private val name: TextView = itemView.findViewById(R.id.company_name)
@@ -29,11 +30,12 @@ class TopWatchedHolder(
         fun create(
             parent: ViewGroup,
             onItemClick: (String) -> Unit,
-            onFavoriteClick: (CompanyInfo) -> Unit
+            onFavoriteClick: (CompanyInfo,Int,Boolean,Int) -> Unit,
+            adapterHashCode:Int
         ): TopWatchedHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.top_watched_item, parent, false)
-            return TopWatchedHolder(view, onItemClick, onFavoriteClick)
+            return TopWatchedHolder(view, onItemClick, onFavoriteClick,adapterHashCode)
         }
     }
 
@@ -49,7 +51,8 @@ class TopWatchedHolder(
         favorite.isSelected = item.isFavorite
 
         favorite.setOnClickListener {
-            onFavoriteClick(item)
+            favorite.isSelected = !favorite.isSelected
+            onFavoriteClick(item,adapterPosition,favorite.isSelected,adapterHashCode)
         }
 
         if (item.margin > 0) {
@@ -61,7 +64,7 @@ class TopWatchedHolder(
         }
 
 
-        if (!item.logo.isNullOrEmpty()) {
+        if (item.logo.isNotEmpty()) {
             Picasso.get()
                 .load(item.logo)
                 .transform(

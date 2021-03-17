@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yandex.stockobserver.genralInfo.CompanyInfo
+import com.yandex.stockobserver.ui.MainFragment
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -57,10 +58,28 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
 
     }
 
-     fun onFavoriteClick(companyInfo: CompanyInfo) {
+     fun onFavoriteClick(companyInfo: CompanyInfo,index:Int,isFavorite:Boolean,contentType:String) {
          viewModelScope.launch {
-             companyInfo.isFavorite = true
-             repositoryImpl.addFavorite(companyInfo)
+             if (!isFavorite){
+                 companyInfo.isFavorite = false
+                 repositoryImpl.deleteFavorite(companyInfo.cusip)
+             }else{
+                 companyInfo.isFavorite = true
+                 repositoryImpl.addFavorite(companyInfo)
+             }
+
+             if (contentType==MainFragment.TOP_STOCKS){
+                 newVooComp[index] = companyInfo
+                 _vooCompanies.value = newVooComp
+             }else{
+                 newVooComp.forEachIndexed { index,stockCompany ->
+                     if (stockCompany.cusip == companyInfo.cusip){
+                      newVooComp[index] = companyInfo
+                      _vooCompanies.value = newVooComp
+                     }
+                 }
+             }
+
              getFavorites()
          }
     }
@@ -73,7 +92,7 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
         val loadIndent = 5
         if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - loadIndent) {
             vooPage++
-            getHoldings(vooPage)
+            getHoldings(1)
         }
     }
 

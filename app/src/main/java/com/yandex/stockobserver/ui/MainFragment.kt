@@ -28,6 +28,8 @@ class MainFragment : Fragment() {
     private val favouriteAdapter = TopWatchedAdapter(::onItemClick, ::onFavoriteClick)
     private val stocksRecycler by lazy { RecyclerView(requireContext()) }
     private val favouriteRecycler by lazy { RecyclerView(requireContext()) }
+    private val popularHintRecycler by lazy { RecyclerView(requireContext()) }
+    private val lookingHintRecycler by lazy { RecyclerView(requireContext()) }
 
 
     override fun onCreateView(
@@ -59,7 +61,6 @@ class MainFragment : Fragment() {
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-
             }
 
             override fun onPageSelected(position: Int) {
@@ -90,6 +91,9 @@ class MainFragment : Fragment() {
         })
     }
 
+    private fun initSearchView(){
+
+    }
     private fun recyclerScrollListener(): RecyclerView.OnScrollListener {
         var pastVisiblesItems: Int
         var visibleItemCount: Int
@@ -138,11 +142,21 @@ class MainFragment : Fragment() {
         viewModel.onItemClick(cusip)
     }
 
-    private fun onFavoriteClick(companyInfo: CompanyInfo) {
-        viewModel.onFavoriteClick(companyInfo)
+    private fun onFavoriteClick(companyInfo: CompanyInfo,index:Int,isFavorite:Boolean,hashCode:Int) {
+        var contentType:String =""
+        if (favouriteAdapter.hashCode() == hashCode){
+            contentType = FAVORITE
+        }else contentType = TOP_STOCKS
+
+        viewModel.onFavoriteClick(companyInfo,index,isFavorite,contentType)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+    }
+
+    companion object{
+        const val FAVORITE = "FAVORITE"
+        const val TOP_STOCKS = "TOP_STOCKS"
     }
 }

@@ -3,4 +3,6 @@
     <string name="stocks">Stocks</string>
     <string name="favourite">Favourite</string>
     <string name="search_hint">Find company or ticker</string>
+    <string name="search_popular">Popular requests</string>
+    <string name="search_looking_for">You’ve searched for this</string>
 </resources>

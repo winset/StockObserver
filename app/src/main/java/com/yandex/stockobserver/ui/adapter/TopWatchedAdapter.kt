@@ -5,13 +5,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.stockobserver.genralInfo.CompanyInfo
 
-class TopWatchedAdapter(private val onItemClick: (String) -> Unit,private val onFavoriteClick: (CompanyInfo) -> Unit) :
+class TopWatchedAdapter(private val onItemClick: (String) -> Unit,private val onFavoriteClick: (CompanyInfo,Int,Boolean,Int) -> Unit) :
     RecyclerView.Adapter<TopWatchedHolder>() {
 
     private var topList = mutableListOf<CompanyInfo>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopWatchedHolder {
-        return TopWatchedHolder.create(parent, onItemClick,onFavoriteClick)
+        return TopWatchedHolder.create(parent, onItemClick,onFavoriteClick,hashCode())
     }
 
     override fun onBindViewHolder(holder: TopWatchedHolder, position: Int) {

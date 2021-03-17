@@ -5,6 +5,7 @@ import com.yandex.stockobserver.api.NetworkModule
 import com.yandex.stockobserver.db.Storage
 import com.yandex.stockobserver.db.StorageModule
 import com.yandex.stockobserver.genralInfo.*
+import com.yandex.stockobserver.genralInfo.dto.SimilarResponseDto
 import com.yandex.stockobserver.genralInfo.entitys.CompanyInfoEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -100,6 +101,10 @@ class HoldingRepositoryImpl(
             )
         }
         return result
+    }
+
+    private suspend fun getSimilar(symbol:String):SimilarResponseDto{
+        return api.getSimilarSymbol(symbol)
     }
 
     private suspend fun getHolding(page: Int): ETFHoldings {
