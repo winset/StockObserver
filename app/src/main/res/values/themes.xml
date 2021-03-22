@@ -13,4 +13,9 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="CustomSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="colorControlActivated">@color/black_text</item>
+        <item name="android:textColorHint">@color/black_text</item>
+    </style>
 </resources>

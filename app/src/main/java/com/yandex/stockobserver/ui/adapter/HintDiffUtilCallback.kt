@@ -1,10 +1,11 @@
 package com.yandex.stockobserver.ui.adapter
 
 import androidx.recyclerview.widget.DiffUtil
+import com.yandex.stockobserver.genralInfo.Hint
 
 class HintDiffUtilCallback(
-    private val oldHints: List<String>,
-    private val newHints: List<String>
+    private val oldHints: List<Hint>,
+    private val newHints: List<Hint>
 ): DiffUtil.Callback() {
     override fun getOldListSize(): Int {
         return oldHints.size
@@ -17,7 +18,7 @@ class HintDiffUtilCallback(
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldCompanies = oldHints[oldItemPosition]
         val newCompanies = newHints[newItemPosition]
-        return oldCompanies == newCompanies
+        return oldCompanies.hint == newCompanies.hint
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

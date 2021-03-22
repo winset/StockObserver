@@ -5,14 +5,13 @@ import com.yandex.stockobserver.api.NetworkModule
 import com.yandex.stockobserver.db.Storage
 import com.yandex.stockobserver.db.StorageModule
 import com.yandex.stockobserver.genralInfo.*
-import com.yandex.stockobserver.genralInfo.dto.SimilarResponseDto
+import com.yandex.stockobserver.genralInfo.dto.SearchSimilarDto
 import com.yandex.stockobserver.genralInfo.entitys.CompanyInfoEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -24,24 +23,30 @@ class HoldingRepositoryImpl(
 ) : HoldingRepository {
 
     private val batchSize = 15
-    private val holdingsList = runBlocking { getHolding(0) }
+    // private val holdingsList = runBlocking { getHolding(0) }
 
 
-    fun getVOOCompanies(page: Int): Flow<List<CompanyInfo>> {
+    fun getVOOCompanies(holdingsList: ETFHoldings, page: Int): Flow<List<CompanyInfo>> {
         return flow {
             var result = emptyList<CompanyInfo>()
             val favorites = mutableListOf<CompanyInfo>()
             getFavorites().collect {
-                if (!it.isNullOrEmpty()){
+                if (!it.isNullOrEmpty()) {
                     favorites.addAll(it)
                 }
             }
             // val holdings = getHolding(0)
             val firstElement = (page) * batchSize
             if (firstElement + batchSize <= holdingsList.holdings.size) {
-                result = getCompanyInfo(firstElement, firstElement + batchSize,favorites)
+                result =
+                    getCompanyInfo(holdingsList, firstElement, firstElement + batchSize, favorites)
             } else {
-                result = getCompanyInfo(firstElement, holdingsList.holdings.lastIndex,favorites)
+                result = getCompanyInfo(
+                    holdingsList,
+                    firstElement,
+                    holdingsList.holdings.lastIndex,
+                    favorites
+                )
             }
             emit(result)
         }.flowOn(Dispatchers.IO)
@@ -57,12 +62,30 @@ class HoldingRepositoryImpl(
         storage.insertFavorite(CompanyInfoEntity(companyInfo))
     }
 
-    suspend fun deleteFavorite(cusip: String){
+    suspend fun deleteFavorite(cusip: String) {
         storage.deleteFromFavorite(cusip)
     }
 
+    fun getPopularHint(holdingsList: ETFHoldings): List<Hint> {
+        val hintList = mutableListOf<Hint>()
+        val popular = holdingsList.holdings.shuffled().subList(0, 10)
+        popular.forEach {
+            hintList.add(Hint(it.name))
+        }
+        return hintList
+    }
 
-    private suspend fun getCompanyInfo(firstIndex: Int, lastIndex: Int,favorites:List<CompanyInfo>): List<CompanyInfo> {
+    suspend fun getLookingHint() {
+
+    }
+
+
+    private suspend fun getCompanyInfo(
+        holdingsList: ETFHoldings,
+        firstIndex: Int,
+        lastIndex: Int,
+        favorites: List<CompanyInfo>
+    ): List<CompanyInfo> {
         val result = mutableListOf<CompanyInfo>()
         val companyInfo = mutableListOf<CompanyGeneral>()
         val quotes = mutableListOf<Quote>()
@@ -81,9 +104,9 @@ class HoldingRepositoryImpl(
             val currentPrice = BigDecimal(quotes[index].currentPrice, context).toDouble()
             val margin = currentPrice - openPrice
             val result1 = BigDecimal(margin, context)
-            var isFavorite:Boolean = false
+            var isFavorite: Boolean = false
             favorites.forEach {
-                if (it.cusip==holdingsItem.cusip){
+                if (it.cusip == holdingsItem.cusip) {
                     isFavorite = true
                 }
             }
@@ -103,11 +126,12 @@ class HoldingRepositoryImpl(
         return result
     }
 
-    private suspend fun getSimilar(symbol:String):SimilarResponseDto{
-        return api.getSimilarSymbol(symbol)
+
+    suspend fun getSimilar(symbol: String): SearchSimilar {
+        return api.getSimilarSymbol(symbol).convert()
     }
 
-    private suspend fun getHolding(page: Int): ETFHoldings {
+    suspend fun getHolding(page: Int): ETFHoldings {
         return api.getHoldings(page).convert()
     }
 

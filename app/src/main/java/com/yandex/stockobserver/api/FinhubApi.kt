@@ -3,7 +3,7 @@ package com.yandex.stockobserver.api
 import com.yandex.stockobserver.genralInfo.dto.CompanyGeneralDto
 import com.yandex.stockobserver.genralInfo.dto.ETFHoldingsDto
 import com.yandex.stockobserver.genralInfo.dto.QuoteDto
-import com.yandex.stockobserver.genralInfo.dto.SimilarResponseDto
+import com.yandex.stockobserver.genralInfo.dto.SearchSimilarDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -27,5 +27,5 @@ interface FinhubApi {
     @GET("search")
     suspend fun getSimilarSymbol(
         @Query("q") symbol: String
-    ):SimilarResponseDto
+    ):SearchSimilarDto
 }
