@@ -4,10 +4,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.stockobserver.genralInfo.CompanyInfo
+import com.yandex.stockobserver.genralInfo.Hint
 
 class HintAdapter(): RecyclerView.Adapter<HintHolder>() {
 
-    private var hintList = mutableListOf<String>()
+    private var hintList = mutableListOf<Hint>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HintHolder {
        return HintHolder.create(parent)
@@ -21,7 +22,7 @@ class HintAdapter(): RecyclerView.Adapter<HintHolder>() {
         return hintList.size
     }
 
-    fun updateData(hintList: List<String>) {
+    fun updateData(hintList: List<Hint>) {
         val diffResult = DiffUtil.calculateDiff(HintDiffUtilCallback(this.hintList, hintList))
         this.hintList.clear()
         this.hintList.addAll(hintList)

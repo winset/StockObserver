@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.stockobserver.R
+import com.yandex.stockobserver.genralInfo.Hint
 
 class HintHolder(view: View) : RecyclerView.ViewHolder(view) {
     companion object {
@@ -16,9 +17,9 @@ class HintHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    private val hint: TextView = itemView.findViewById(R.id.hint_tv)
+    private val hintTV: TextView = itemView.findViewById(R.id.hint_tv)
 
-    fun bind(symbol: String) {
-        hint.text = symbol
+    fun bind(hint: Hint) {
+        hintTV.text = hint.hint
     }
 }
