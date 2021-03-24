@@ -22,7 +22,7 @@ class HoldingRepositoryImpl(
     private val storage: Storage = StorageModule.storage
 ) : HoldingRepository {
 
-    private val batchSize = 15
+    private val batchSize = 10
     // private val holdingsList = runBlocking { getHolding(0) }
 
 

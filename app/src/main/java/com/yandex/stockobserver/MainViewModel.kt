@@ -31,20 +31,22 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
     private val _lookingHint = MutableLiveData<List<Hint>>()
     val lookingHint: LiveData<List<Hint>> = _lookingHint
 
+    private val _error = MutableLiveData<Int>()
+    val error:LiveData<Int> = _error
+
     private lateinit var holdingsList: ETFHoldings
 
     private val _cusip = MutableLiveData<String>()
     val cusip: LiveData<String> = _cusip
 
     private var vooPage: Int = 0
+    private var loadMore = true
 
     init {
         viewModelScope.launch {
-
             getHoldingsList()
             if (::holdingsList.isInitialized) {
                 getHoldings(holdingsList, 0)
-              //  getHoldings(holdingsList, 1)
                 getFavorites()
                 getHint()
             }
@@ -70,6 +72,7 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
                     newVooComp.addAll(it)
                     Log.d("TAG", "getHoldings: " + newVooComp.size)
                     _vooCompanies.value = newVooComp
+                    loadMore = true
                 }
             }
         }
@@ -141,9 +144,16 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
         totalItemCount: Int
     ) {
         val loadIndent = 5
-        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - loadIndent) {
-            vooPage++
-            // getHoldings(holdingsList,2)
+        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount-1) {
+            if (loadMore){
+                vooPage++
+                Log.d("TAG", "loadOnScroll: " + vooPage)
+                if (vooPage*15<=holdingsList.numberOfHoldings)
+                    getHoldings(holdingsList,vooPage)
+                loadMore = false
+            }
+
+
         }
     }
 

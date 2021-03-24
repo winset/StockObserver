@@ -5,4 +5,9 @@
     <string name="search_hint">Find company or ticker</string>
     <string name="search_popular">Popular requests</string>
     <string name="search_looking_for">You’ve searched for this</string>
+    
+    <string name="chart">Chart</string>
+    <string name="summary">Summary</string>
+    <string name="news">News</string>
+    <string name="forecasts">Forecasts</string>
 </resources>

@@ -8,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SearchView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -19,7 +22,7 @@ import com.yandex.stockobserver.MainViewModel
 import com.yandex.stockobserver.R
 import com.yandex.stockobserver.databinding.MainFragmentBinding
 import com.yandex.stockobserver.genralInfo.CompanyInfo
-import com.yandex.stockobserver.ui.adapter.CompaniesPagerAdapter
+import com.yandex.stockobserver.ui.adapter.StoksPagerAdapter
 import com.yandex.stockobserver.ui.adapter.HintAdapter
 import com.yandex.stockobserver.ui.adapter.TopWatchedAdapter
 
@@ -27,6 +30,7 @@ import com.yandex.stockobserver.ui.adapter.TopWatchedAdapter
 class MainFragment : Fragment() {
 
     private lateinit var binding: MainFragmentBinding
+    private lateinit var navController: NavController
 
     private val viewModel: MainViewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
     private val stocksAdapter = TopWatchedAdapter(::onItemClick, ::onFavoriteClick)
@@ -38,7 +42,7 @@ class MainFragment : Fragment() {
     private val lookingHintAdapter = HintAdapter()
     /* private val popularHintRecycler by lazy { RecyclerView(requireContext()) }
      private val lookingHintRecycler by lazy { RecyclerView(requireContext()) }*/
-
+    var errorDialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,10 +54,12 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = findNavController()
         initPager()
         setTopHoldings()
         setFavouriteHoldings()
         initSearchView()
+        showError()
     }
 
     private fun initPager() {
@@ -61,7 +67,7 @@ class MainFragment : Fragment() {
         recyclers.add(stocksRecycler)
         recyclers.add(favouriteRecycler)
 
-        val pagerAdapter = CompaniesPagerAdapter(recyclers)
+        val pagerAdapter = StoksPagerAdapter(recyclers)
         binding.companiesPager.adapter = pagerAdapter
         //for tv animation
         binding.companiesPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -98,6 +104,20 @@ class MainFragment : Fragment() {
             override fun onPageScrollStateChanged(state: Int) {
             }
         })
+        binding.favouriteBtn.setOnClickListener {
+            val currentPosotion = binding.companiesPager.currentItem
+            if (currentPosotion==0){
+                binding.companiesPager.currentItem = 1
+            }
+        }
+
+        binding.stocksBtn.setOnClickListener {
+            val currentPosotion = binding.companiesPager.currentItem
+            if (currentPosotion==1){
+                binding.companiesPager.currentItem = 0
+            }
+        }
+
     }
 
     private fun initSearchView() {
@@ -147,7 +167,7 @@ class MainFragment : Fragment() {
             adapter = popularHintAdapter
             layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.HORIZONTAL)
         }
-        viewModel.popularHint.observe(this, Observer {
+        viewModel.popularHint.observe(viewLifecycleOwner, Observer {
             popularHintAdapter.updateData(it)
         })
     }
@@ -157,7 +177,7 @@ class MainFragment : Fragment() {
             adapter = lookingHintAdapter
             layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.HORIZONTAL)
         }
-        viewModel.lookingHint.observe(this, Observer {
+        viewModel.lookingHint.observe(viewLifecycleOwner, Observer {
             lookingHintAdapter.updateData(it)
         })
     }
@@ -192,7 +212,7 @@ class MainFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             addOnScrollListener(recyclerScrollListener())
         }
-        viewModel.vooCompanies.observe(this, Observer {
+        viewModel.vooCompanies.observe(viewLifecycleOwner, Observer {
             stocksAdapter.updateData(it)
         })
     }
@@ -202,13 +222,14 @@ class MainFragment : Fragment() {
             adapter = favouriteAdapter
             layoutManager = LinearLayoutManager(context)
         }
-        viewModel.favouriteCompanies.observe(this, Observer {
+        viewModel.favouriteCompanies.observe(viewLifecycleOwner, Observer {
             favouriteAdapter.updateData(it)
         })
     }
 
     private fun onItemClick(cusip: String) {
         viewModel.onItemClick(cusip)
+        findNavController().navigate(R.id.action_mainFragment_to_companyFragment)
     }
 
     private fun onFavoriteClick(
@@ -217,13 +238,34 @@ class MainFragment : Fragment() {
         isFavorite: Boolean,
         hashCode: Int
     ) {
-        var contentType: String = ""
+        var contentType = ""
         if (favouriteAdapter.hashCode() == hashCode) {
             contentType = FAVORITE
         } else contentType = TOP_STOCKS
 
         viewModel.onFavoriteClick(companyInfo, index, isFavorite, contentType)
     }
+
+    private fun showError() {
+        viewModel.error.observe(viewLifecycleOwner, Observer {
+            if (errorDialog == null) {
+                val alertDialog = AlertDialog.Builder(requireContext())
+                alertDialog.setTitle("Error")
+                    .setMessage(resources.getString(it))
+                    .setPositiveButton(
+                        "Ok"
+                    ) { alertDialog, id ->
+                        errorDialog = null
+                        alertDialog.cancel()
+                    }.setOnDismissListener {
+                        errorDialog = null
+                    }
+                errorDialog = alertDialog.create()
+                errorDialog!!.show()
+            }
+        })
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

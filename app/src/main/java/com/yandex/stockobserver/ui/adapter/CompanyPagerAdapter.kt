@@ -2,13 +2,12 @@ package com.yandex.stockobserver.ui.adapter
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
 
-class CompaniesPagerAdapter(private val recyclers: List<RecyclerView>) : PagerAdapter() {
+class CompanyPagerAdapter(private val views:List<View>):PagerAdapter() {
 
     override fun getCount(): Int {
-        return recyclers.size
+        return views.size
     }
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
@@ -16,12 +15,13 @@ class CompaniesPagerAdapter(private val recyclers: List<RecyclerView>) : PagerAd
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val recycler: View = recyclers[position]
-        container.addView(recycler)
-        return recycler
+        val view:View = views[position]
+        container.addView(view)
+        return view
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         container.removeView(`object` as View)
     }
+
 }

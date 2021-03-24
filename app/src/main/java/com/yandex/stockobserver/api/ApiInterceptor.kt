@@ -13,21 +13,30 @@ class ApiInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
         val originalUrl = original.url
+        /*
+        *
+        * Думаю тут нужно не большое пояснение
+        * В общем finhubApi не очень подходит для того что нужно сделать
+        * из-за этого приходится делать целую кучу вызовов чтоб сформировать список акций
+        * на каждую карточку 3 вызова
+        * бесплатно finhubApi позволяет делать 60/min
+        * чтобы дышать не много свободнее я сделал это..
+        *
+        * */
+
         val token = if (TokenLife.isTokenAlive(TokenLife.FIRST_TOKEN)) {
-            Log.d("TAG12", "intercept1111: ")
+            Log.d("TAG", "intercept11: ")
             BuildConfig.API_KEY
         } else if (TokenLife.isTokenAlive(TokenLife.SECOND_TOKEN)) {
-            Log.d("TAG12", "intercept2222222: ")
+            Log.d("TAG", "intercept22: ")
             BuildConfig.API_KEY1
         } else {
-            Log.d("TAG12", "intercept3333: ")
             return Response.Builder()
                 .request(original)
                 .protocol(Protocol.HTTP_1_1)
                 .code(999)
                 .message("\"Limit is reached, please wait.\"")
                 .body(ResponseBody.create(null, "Limit is reached, please wait.")).build()
-          //  throw IllegalStateException("Limit is reached, please wait.")
         }
 
         val requestBuilder = originalUrl.newBuilder()

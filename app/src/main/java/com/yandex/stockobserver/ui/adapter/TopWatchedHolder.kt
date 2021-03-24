@@ -19,8 +19,8 @@ class TopWatchedHolder(
     private val adapterHashCode:Int
 ) : RecyclerView.ViewHolder(view) {
     private val layout: ConstraintLayout = itemView.findViewById(R.id.top_background)
-    private val name: TextView = itemView.findViewById(R.id.company_name)
-    private val symbol: TextView = itemView.findViewById(R.id.company_symbol)
+    private val name: TextView = itemView.findViewById(R.id.company_name_fg)
+    private val symbol: TextView = itemView.findViewById(R.id.company_symbol_fg)
     private val logo: ImageView = itemView.findViewById(R.id.company_logo)
     private val favorite: ImageView = itemView.findViewById(R.id.favorite_btn)
     private val price: TextView = itemView.findViewById(R.id.price)
@@ -67,6 +67,7 @@ class TopWatchedHolder(
         if (item.logo.isNotEmpty()) {
             Picasso.get()
                 .load(item.logo)
+                .resize(100,100)
                 .transform(
                     RoundedCornersTransformation(
                         15,
@@ -75,6 +76,15 @@ class TopWatchedHolder(
                     )
                 )
                 .into(logo)
+        }else{
+            Picasso.get().load(R.drawable.no_image_available)
+                .resize(100,100)
+                .transform(
+                    RoundedCornersTransformation(
+                        15,
+                        0,
+                        RoundedCornersTransformation.CornerType.ALL
+                    )).into(logo)
         }
     }
 
