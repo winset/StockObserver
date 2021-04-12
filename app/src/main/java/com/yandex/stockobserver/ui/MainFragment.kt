@@ -1,5 +1,6 @@
 package com.yandex.stockobserver.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -20,34 +21,39 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.viewpager.widget.ViewPager
 import com.yandex.stockobserver.MainViewModel
 import com.yandex.stockobserver.R
+import com.yandex.stockobserver.StockApplication
 import com.yandex.stockobserver.databinding.MainFragmentBinding
+import com.yandex.stockobserver.di.injectViewModel
 import com.yandex.stockobserver.genralInfo.CompanyInfo
 import com.yandex.stockobserver.ui.adapter.StoksPagerAdapter
 import com.yandex.stockobserver.ui.adapter.HintAdapter
-import com.yandex.stockobserver.ui.adapter.TopWatchedAdapter
+import com.yandex.stockobserver.ui.adapter.StockAdapter
+import javax.inject.Inject
 
 
 class MainFragment : Fragment() {
-
     private lateinit var binding: MainFragmentBinding
     private lateinit var navController: NavController
 
-    private val viewModel: MainViewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
-    private val stocksAdapter = TopWatchedAdapter(::onItemClick, ::onFavoriteClick)
-    private val favouriteAdapter = TopWatchedAdapter(::onItemClick, ::onFavoriteClick)
-    private val searchAdapter = TopWatchedAdapter(::onItemClick, ::onFavoriteClick)
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel: MainViewModel by lazy { injectViewModel(viewModelFactory) }
+    private val stocksAdapter = StockAdapter(::onItemClick, ::onFavoriteClick)
+    private val favouriteAdapter = StockAdapter(::onItemClick, ::onFavoriteClick)
+    private val searchAdapter = StockAdapter(::onItemClick, ::onFavoriteClick)
     private val stocksRecycler by lazy { RecyclerView(requireContext()) }
     private val favouriteRecycler by lazy { RecyclerView(requireContext()) }
     private val popularHintAdapter = HintAdapter()
     private val lookingHintAdapter = HintAdapter()
-    /* private val popularHintRecycler by lazy { RecyclerView(requireContext()) }
-     private val lookingHintRecycler by lazy { RecyclerView(requireContext()) }*/
-    var errorDialog: AlertDialog? = null
+
+    private var errorDialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        StockApplication.stockComponent.inject(this)
         binding = MainFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -106,14 +112,14 @@ class MainFragment : Fragment() {
         })
         binding.favouriteBtn.setOnClickListener {
             val currentPosotion = binding.companiesPager.currentItem
-            if (currentPosotion==0){
+            if (currentPosotion == 0) {
                 binding.companiesPager.currentItem = 1
             }
         }
 
         binding.stocksBtn.setOnClickListener {
             val currentPosotion = binding.companiesPager.currentItem
-            if (currentPosotion==1){
+            if (currentPosotion == 1) {
                 binding.companiesPager.currentItem = 0
             }
         }
@@ -165,7 +171,7 @@ class MainFragment : Fragment() {
     private fun initPopularHint() {
         binding.popularList.apply {
             adapter = popularHintAdapter
-            layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.HORIZONTAL)
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
         }
         viewModel.popularHint.observe(viewLifecycleOwner, Observer {
             popularHintAdapter.updateData(it)
@@ -175,7 +181,7 @@ class MainFragment : Fragment() {
     private fun initLookingHint() {
         binding.lookingForList.apply {
             adapter = lookingHintAdapter
-            layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.HORIZONTAL)
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
         }
         viewModel.lookingHint.observe(viewLifecycleOwner, Observer {
             lookingHintAdapter.updateData(it)

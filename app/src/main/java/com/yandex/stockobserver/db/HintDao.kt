@@ -16,4 +16,7 @@ interface HintDao {
     @Query("SELECT * FROM hintdb")
     fun getAllHint():List<HintEntity>
 
+    @Query("DELETE FROM hintdb WHERE hint =:hint")
+    fun deleteFavorite(hint:String)
+
 }

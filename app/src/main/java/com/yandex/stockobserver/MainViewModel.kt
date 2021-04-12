@@ -1,7 +1,6 @@
 package com.yandex.stockobserver
 
 import android.util.Log
-import android.util.TimeUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,11 +12,13 @@ import com.yandex.stockobserver.ui.MainFragment
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.sql.Time
-import java.util.*
+import javax.inject.Inject
 
-class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingRepositoryImpl()) :
+
+class MainViewModel @Inject constructor( private val repositoryImpl: HoldingRepositoryImpl) :
     ViewModel() {
+
+
     private val _vooCompanies = MutableLiveData<List<CompanyInfo>>()
     val vooCompanies: LiveData<List<CompanyInfo>> = _vooCompanies
     private val newVooComp = mutableListOf<CompanyInfo>()
@@ -32,7 +33,7 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
     val lookingHint: LiveData<List<Hint>> = _lookingHint
 
     private val _error = MutableLiveData<Int>()
-    val error:LiveData<Int> = _error
+    val error: LiveData<Int> = _error
 
     private lateinit var holdingsList: ETFHoldings
 
@@ -40,7 +41,9 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
     val cusip: LiveData<String> = _cusip
 
     private var vooPage: Int = 0
-    private var loadMore = true
+    private var loadMoreStocks = true
+
+
 
     init {
         viewModelScope.launch {
@@ -51,8 +54,9 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
                 getHint()
             }
         }
-
     }
+
+
 
     private suspend fun getHoldingsList() {
         try {
@@ -72,7 +76,7 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
                     newVooComp.addAll(it)
                     Log.d("TAG", "getHoldings: " + newVooComp.size)
                     _vooCompanies.value = newVooComp
-                    loadMore = true
+                    loadMoreStocks = true
                 }
             }
         }
@@ -86,13 +90,13 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
         }
     }
 
-     private fun getHint() {
-         viewModelScope.launch {
-             _popularHint.value = repositoryImpl.getPopularHint(holdingsList)
-         }
+    private fun getHint() {
+        viewModelScope.launch {
+            _popularHint.value = repositoryImpl.getPopularHint(holdingsList)
+        }
     }
 
-    fun addLookingForHint(symbol: String){
+    fun addLookingForHint(symbol: String) {
 
     }
 
@@ -143,19 +147,17 @@ class MainViewModel(private val repositoryImpl: HoldingRepositoryImpl = HoldingR
         visibleItemCount: Int,
         totalItemCount: Int
     ) {
-        val loadIndent = 5
-        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount-1) {
-            if (loadMore){
+        val loadIndent = 2
+        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - loadIndent) {
+            if (loadMoreStocks) {
                 vooPage++
                 Log.d("TAG", "loadOnScroll: " + vooPage)
-                if (vooPage*15<=holdingsList.numberOfHoldings)
-                    getHoldings(holdingsList,vooPage)
-                loadMore = false
+                if (vooPage * 15 <= holdingsList.numberOfHoldings)
+                    getHoldings(holdingsList, vooPage)
+                loadMoreStocks = false
             }
 
 
         }
     }
-
-
 }
