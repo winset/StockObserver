@@ -12,7 +12,7 @@ import com.yandex.stockobserver.R
 import com.yandex.stockobserver.genralInfo.CompanyInfo
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 
-class TopWatchedHolder(
+class StockHolder(
     view: View,
     private val onItemClick: (String) -> Unit,
     private val onFavoriteClick: (CompanyInfo,Int,Boolean,Int) -> Unit,
@@ -32,10 +32,10 @@ class TopWatchedHolder(
             onItemClick: (String) -> Unit,
             onFavoriteClick: (CompanyInfo,Int,Boolean,Int) -> Unit,
             adapterHashCode:Int
-        ): TopWatchedHolder {
+        ): StockHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.top_watched_item, parent, false)
-            return TopWatchedHolder(view, onItemClick, onFavoriteClick,adapterHashCode)
+            return StockHolder(view, onItemClick, onFavoriteClick,adapterHashCode)
         }
     }
 

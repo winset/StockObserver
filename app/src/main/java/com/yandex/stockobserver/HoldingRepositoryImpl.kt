@@ -1,11 +1,9 @@
 package com.yandex.stockobserver
 
 import com.yandex.stockobserver.api.FinhubApi
-import com.yandex.stockobserver.api.NetworkModule
+import com.yandex.stockobserver.api.QuoteWebsocket
 import com.yandex.stockobserver.db.Storage
-import com.yandex.stockobserver.db.StorageModule
 import com.yandex.stockobserver.genralInfo.*
-import com.yandex.stockobserver.genralInfo.dto.SearchSimilarDto
 import com.yandex.stockobserver.genralInfo.entitys.CompanyInfoEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -15,16 +13,17 @@ import kotlinx.coroutines.flow.flowOn
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class HoldingRepositoryImpl(
-    private val api: FinhubApi = NetworkModule.api,
-    private val storage: Storage = StorageModule.storage
+@Singleton
+class HoldingRepositoryImpl @Inject constructor(
+    private val storage: Storage,
+    private val api: FinhubApi,
+    private val quoteWebsocket: QuoteWebsocket,
 ) : HoldingRepository {
 
-    private val batchSize = 10
-    // private val holdingsList = runBlocking { getHolding(0) }
-
+    private val batchSize = 15
 
     fun getVOOCompanies(holdingsList: ETFHoldings, page: Int): Flow<List<CompanyInfo>> {
         return flow {
@@ -35,7 +34,7 @@ class HoldingRepositoryImpl(
                     favorites.addAll(it)
                 }
             }
-            // val holdings = getHolding(0)
+
             val firstElement = (page) * batchSize
             if (firstElement + batchSize <= holdingsList.holdings.size) {
                 result =
@@ -78,6 +77,15 @@ class HoldingRepositoryImpl(
     suspend fun getLookingHint() {
 
     }
+
+    suspend fun initQuoteSocket(holdingsList: ETFHoldings){
+        quoteWebsocket.initWebSocket(holdingsList)
+    }
+
+    suspend fun closeQuoteWebSocket(){
+        quoteWebsocket.webSocketClient.close()
+    }
+
 
 
     private suspend fun getCompanyInfo(
