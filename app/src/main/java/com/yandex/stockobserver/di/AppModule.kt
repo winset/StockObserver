@@ -3,7 +3,6 @@ package com.yandex.stockobserver.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.yandex.stockobserver.MainViewModel
 import com.yandex.stockobserver.db.StockDatabase
 import com.yandex.stockobserver.db.Storage
 import dagger.Module

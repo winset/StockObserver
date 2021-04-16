@@ -15,8 +15,8 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 class StockHolder(
     view: View,
     private val onItemClick: (String) -> Unit,
-    private val onFavoriteClick: (CompanyInfo,Int,Boolean,Int) -> Unit,
-    private val adapterHashCode:Int
+    private val onFavoriteClick: (CompanyInfo, Int, Boolean, Int) -> Unit,
+    private val adapterHashCode: Int
 ) : RecyclerView.ViewHolder(view) {
     private val layout: ConstraintLayout = itemView.findViewById(R.id.top_background)
     private val name: TextView = itemView.findViewById(R.id.company_name_fg)
@@ -30,12 +30,12 @@ class StockHolder(
         fun create(
             parent: ViewGroup,
             onItemClick: (String) -> Unit,
-            onFavoriteClick: (CompanyInfo,Int,Boolean,Int) -> Unit,
-            adapterHashCode:Int
+            onFavoriteClick: (CompanyInfo, Int, Boolean, Int) -> Unit,
+            adapterHashCode: Int
         ): StockHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.top_watched_item, parent, false)
-            return StockHolder(view, onItemClick, onFavoriteClick,adapterHashCode)
+            return StockHolder(view, onItemClick, onFavoriteClick, adapterHashCode)
         }
     }
 
@@ -45,14 +45,14 @@ class StockHolder(
         price.text = "$" + item.price
 
         itemView.setOnClickListener {
-            onItemClick(item.cusip)
+            onItemClick(item.symbol)
         }
 
         favorite.isSelected = item.isFavorite
 
         favorite.setOnClickListener {
             favorite.isSelected = !favorite.isSelected
-            onFavoriteClick(item,adapterPosition,favorite.isSelected,adapterHashCode)
+            onFavoriteClick(item, adapterPosition, favorite.isSelected, adapterHashCode)
         }
 
         if (item.margin > 0) {
@@ -67,7 +67,7 @@ class StockHolder(
         if (item.logo.isNotEmpty()) {
             Picasso.get()
                 .load(item.logo)
-                .resize(100,100)
+                .resize(100, 100)
                 .transform(
                     RoundedCornersTransformation(
                         15,
@@ -78,13 +78,14 @@ class StockHolder(
                 .into(logo)
         }else{
             Picasso.get().load(R.drawable.no_image_available)
-                .resize(100,100)
+                .resize(100, 100)
                 .transform(
                     RoundedCornersTransformation(
                         15,
                         0,
                         RoundedCornersTransformation.CornerType.ALL
-                    )).into(logo)
+                    )
+                ).into(logo)
         }
     }
 

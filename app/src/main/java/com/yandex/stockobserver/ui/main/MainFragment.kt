@@ -1,6 +1,6 @@
-package com.yandex.stockobserver.ui
+package com.yandex.stockobserver.ui.main
 
-import android.content.Context
+
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -19,15 +19,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.viewpager.widget.ViewPager
-import com.yandex.stockobserver.MainViewModel
 import com.yandex.stockobserver.R
 import com.yandex.stockobserver.StockApplication
 import com.yandex.stockobserver.databinding.MainFragmentBinding
 import com.yandex.stockobserver.di.injectViewModel
 import com.yandex.stockobserver.genralInfo.CompanyInfo
-import com.yandex.stockobserver.ui.adapter.StoksPagerAdapter
 import com.yandex.stockobserver.ui.adapter.HintAdapter
 import com.yandex.stockobserver.ui.adapter.StockAdapter
+import com.yandex.stockobserver.ui.adapter.StoksPagerAdapter
 import javax.inject.Inject
 
 
@@ -44,8 +43,8 @@ class MainFragment : Fragment() {
     private val searchAdapter = StockAdapter(::onItemClick, ::onFavoriteClick)
     private val stocksRecycler by lazy { RecyclerView(requireContext()) }
     private val favouriteRecycler by lazy { RecyclerView(requireContext()) }
-    private val popularHintAdapter = HintAdapter()
-    private val lookingHintAdapter = HintAdapter()
+    private val popularHintAdapter = HintAdapter(::onHintClick)
+    private val lookingHintAdapter = HintAdapter(::onHintClick)
 
     private var errorDialog: AlertDialog? = null
 
@@ -65,6 +64,7 @@ class MainFragment : Fragment() {
         setTopHoldings()
         setFavouriteHoldings()
         initSearchView()
+        setSearchHoldings()
         showError()
     }
 
@@ -128,9 +128,8 @@ class MainFragment : Fragment() {
 
     private fun initSearchView() {
         var searchImageView: ImageView? = null
+        var closeImageView:ImageView? = null
         binding.searchView.setOnQueryTextFocusChangeListener { view, b ->
-            Log.d("TAG", "initSearchView: " + b)
-            Log.d("TAG", "initSearchView: " + view.isEnabled)
 
             if (b && view.isEnabled()) {
                 initPopularHint()
@@ -138,11 +137,23 @@ class MainFragment : Fragment() {
 
                 binding.searchFeature.visibility = View.VISIBLE
                 val searchImgId = resources.getIdentifier("android:id/search_mag_icon", null, null)
+                val searchCloseButtonId: Int = resources.getIdentifier("android:id/search_close_btn", null, null)
+                closeImageView = binding.searchView.findViewById(searchCloseButtonId)
                 searchImageView = binding.searchView.findViewById(searchImgId)
                 if (searchImageView != null) {
                     searchImageView!!.setImageDrawable(resources.getDrawable(R.drawable.ic_back))
                     searchImageView!!.setOnClickListener {
+                        binding.searchView.isIconified = true
                         binding.searchView.clearFocus()
+                        binding.searchCompanies.visibility = View.GONE
+                        binding.companiesPager.visibility = View.VISIBLE
+                    }
+
+                    if (closeImageView!=null){
+                        closeImageView!!.setOnClickListener {
+                            binding.searchView.isIconified = true
+                            binding.searchView.clearFocus()
+                        }
                     }
                 }
             } else {
@@ -153,7 +164,6 @@ class MainFragment : Fragment() {
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                // binding.searchView.clearFocus()
                 if (!p0.isNullOrEmpty()) {
                     viewModel.search(p0)
                     viewModel.addLookingForHint(p0)
@@ -165,7 +175,6 @@ class MainFragment : Fragment() {
                 return true
             }
         })
-
     }
 
     private fun initPopularHint() {
@@ -189,7 +198,7 @@ class MainFragment : Fragment() {
     }
 
 
-    private fun recyclerScrollListener(): RecyclerView.OnScrollListener {
+    private fun recyclerScrollListener(contentType:String): RecyclerView.OnScrollListener {
         var pastVisiblesItems: Int
         var visibleItemCount: Int
         var totalItemCount: Int
@@ -204,7 +213,8 @@ class MainFragment : Fragment() {
                     viewModel.loadOnScroll(
                         pastVisiblesItems,
                         visibleItemCount,
-                        totalItemCount
+                        totalItemCount,
+                        contentType
                     )
                 }
             }
@@ -216,7 +226,7 @@ class MainFragment : Fragment() {
         stocksRecycler.apply {
             adapter = stocksAdapter
             layoutManager = LinearLayoutManager(context)
-            addOnScrollListener(recyclerScrollListener())
+            addOnScrollListener(recyclerScrollListener(TOP_STOCKS))
         }
         viewModel.vooCompanies.observe(viewLifecycleOwner, Observer {
             stocksAdapter.updateData(it)
@@ -233,9 +243,28 @@ class MainFragment : Fragment() {
         })
     }
 
-    private fun onItemClick(cusip: String) {
-        viewModel.onItemClick(cusip)
+    private fun setSearchHoldings() {
+        binding.searchCompanies.apply {
+            adapter = searchAdapter
+            layoutManager = LinearLayoutManager(context)
+            addOnScrollListener(recyclerScrollListener(SIMILAR_SEARCH))
+        }
+
+        viewModel.searchCompanies.observe(viewLifecycleOwner, Observer {
+            binding.companiesPager.visibility = View.GONE
+            binding.searchCompanies.visibility = View.VISIBLE
+            Log.d("TAG", "setSearchHoldings: "+ it.first().name)
+            searchAdapter.updateData(it)
+        })
+    }
+
+    private fun onItemClick(symbol: String) {
+        viewModel.onItemClick(symbol)
         findNavController().navigate(R.id.action_mainFragment_to_companyFragment)
+    }
+
+    private fun onHintClick(hint:String){
+        binding.searchView.setQuery(hint,true)
     }
 
     private fun onFavoriteClick(
@@ -245,9 +274,9 @@ class MainFragment : Fragment() {
         hashCode: Int
     ) {
         var contentType = ""
-        if (favouriteAdapter.hashCode() == hashCode) {
-            contentType = FAVORITE
-        } else contentType = TOP_STOCKS
+        if (stocksAdapter.hashCode() == hashCode) {
+            contentType = TOP_STOCKS
+        } else contentType = FAVORITE
 
         viewModel.onFavoriteClick(companyInfo, index, isFavorite, contentType)
     }
@@ -257,7 +286,8 @@ class MainFragment : Fragment() {
             if (errorDialog == null) {
                 val alertDialog = AlertDialog.Builder(requireContext())
                 alertDialog.setTitle("Error")
-                    .setMessage(resources.getString(it))
+                    //.setMessage(resources.getString(it))
+                    .setMessage(it)
                     .setPositiveButton(
                         "Ok"
                     ) { alertDialog, id ->
@@ -272,7 +302,6 @@ class MainFragment : Fragment() {
         })
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
     }
@@ -280,5 +309,6 @@ class MainFragment : Fragment() {
     companion object {
         const val FAVORITE = "FAVORITE"
         const val TOP_STOCKS = "TOP_STOCKS"
+        const val SIMILAR_SEARCH= "SIMILAR_SEARCH"
     }
 }
