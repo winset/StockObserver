@@ -1,22 +1,20 @@
 package com.yandex.stockobserver.ui.main
 
-import android.net.MacAddress
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yandex.stockobserver.genralInfo.*
-import com.yandex.stockobserver.repository.HoldingRepositoryImpl
+import com.yandex.stockobserver.repository.HoldingRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepositoryImpl) :
+class MainViewModel @Inject constructor(private val holdingRepository: HoldingRepository) :
     ViewModel() {
-
 
     private val _vooCompanies = MutableLiveData<List<CompanyInfo>>()
     val vooCompanies: LiveData<List<CompanyInfo>> = _vooCompanies
@@ -40,15 +38,15 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
     val error: LiveData<String> = _error
 
     private lateinit var holdingsList: ETFHoldings
-    private lateinit var searchSimilar: SearchSimilar
+    private lateinit var searchList: ETFHoldings
 
     private val _symbol = MutableLiveData<String>()
     val symbol: LiveData<String> = _symbol
 
     private var vooPage: Int = 0
+    private var searchPage: Int = 0
     private var loadMoreStocks = true
     private var loadMoreSimilar = true
-
 
     init {
         viewModelScope.launch {
@@ -61,10 +59,9 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
         }
     }
 
-
     private suspend fun getHoldingsList() {
         try {
-            holdingsList = repositoryImpl.getHolding(0)
+            holdingsList = holdingRepository.getHolding(0)
         } catch (e: Exception) {
             Log.d("TAG", "getHoldingsList: " + e.message)
             getHoldingsList()
@@ -73,8 +70,17 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
 
     private fun getHoldings(holdingsList: ETFHoldings, page: Int, contentType: String) {
         viewModelScope.launch {
-            repositoryImpl.getVOOCompanies(holdingsList, page).catch {
+            holdingRepository.getVOOCompanies(holdingsList, page).catch {
                 Log.d("TAG", "getHoldings111: " + it.message)
+                if (page != 0) {
+                    when (contentType) {
+                        MainFragment.TOP_STOCKS -> vooPage--
+                        MainFragment.SIMILAR_SEARCH -> {
+                            Log.d("SEARCH", "getHoldings111: " + searchPage--)
+                            searchPage--
+                        }
+                    }
+                }
                 _error.value = it.message
             }.collect {
 
@@ -97,7 +103,7 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
 
     private fun getFavorites() {
         viewModelScope.launch {
-            repositoryImpl.getFavorites().collect {
+            holdingRepository.getFavorites().collect {
                 _favouriteCompanies.value = it
             }
         }
@@ -105,8 +111,8 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
 
     private fun getHint() {
         viewModelScope.launch {
-            _popularHint.value = repositoryImpl.getPopularHint(holdingsList)
-            newHint.addAll(repositoryImpl.getLookingHint())
+            _popularHint.value = holdingRepository.getPopularHint(holdingsList)
+            newHint.addAll(holdingRepository.getLookingHint())
             _lookingHint.value = newHint
         }
     }
@@ -115,7 +121,7 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
         viewModelScope.launch {
             newHint.add(Hint(symbol))
             _lookingHint.value = newHint
-            repositoryImpl.addNewHint(symbol)
+            holdingRepository.addNewHint(symbol)
         }
     }
 
@@ -124,16 +130,20 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
     }
 
     fun search(symbol: String) {
-
         var symbol = symbol.filter { !it.isWhitespace() }
-        if (symbol.length>10){
-           symbol = symbol.substring(0,9)
+        if (symbol.length > 10) {
+            symbol = symbol.substring(0, 9)
         }
-        symbol.replace(".","")
-        Log.d("SEARCH", "search: " + symbol)
+        symbol.replace(".", "")
+        //This code is needed,
+        //otherwise api has problems and we get an empty answer
+        //may be it's ok? idk
+        Log.d("SEARCH", "search: $symbol")
+        searchPage = 0
+        loadMoreSimilar = true
         viewModelScope.launch {
             newSearchCompanies.clear()
-            searchSimilar = repositoryImpl.getSimilar(symbol)
+            val searchSimilar = holdingRepository.getSimilar(symbol)
             val holdingsItems = mutableListOf<HoldingsItem>()
             searchSimilar.result.forEach {
                 holdingsItems.add(
@@ -142,6 +152,7 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
             }
             val holdingsList = ETFHoldings("", "", holdingsItems, searchSimilar.count)
             getHoldings(holdingsList, 0, MainFragment.SIMILAR_SEARCH)
+            searchList = holdingsList
         }
     }
 
@@ -154,10 +165,10 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
         viewModelScope.launch {
             if (!isFavorite) {
                 companyInfo.isFavorite = false
-                repositoryImpl.deleteFavorite(companyInfo.symbol)
+                holdingRepository.deleteFavorite(companyInfo.symbol)
             } else {
                 companyInfo.isFavorite = true
-                repositoryImpl.addFavorite(companyInfo)
+                holdingRepository.addFavorite(companyInfo)
             }
 
             if (contentType == MainFragment.TOP_STOCKS) {
@@ -171,7 +182,6 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
                     }
                 }
             }
-
             getFavorites()
         }
     }
@@ -182,15 +192,20 @@ class MainViewModel @Inject constructor(private val repositoryImpl: HoldingRepos
         totalItemCount: Int,
         contentType: String
     ) {
-        val loadIndent = 2
+        val loadIndent = 3
         if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - loadIndent) {
-            if (contentType==MainFragment.TOP_STOCKS){
-                if (loadMoreStocks) {
+            if (contentType == MainFragment.TOP_STOCKS) {
+                if (loadMoreStocks && (vooPage + 1) * 15 <= holdingsList.holdings.size) {
                     vooPage++
-                    Log.d("TAG", "loadOnScroll: " + vooPage)
-                    if (vooPage * 15 <= holdingsList.numberOfHoldings)
-                        getHoldings(holdingsList, vooPage,contentType)
+                    getHoldings(holdingsList, vooPage, contentType)
                     loadMoreStocks = false
+                }
+            }
+            if (contentType == MainFragment.SIMILAR_SEARCH) {
+                if (loadMoreSimilar && (searchPage + 1) * 15 <= searchList.holdings.size) {
+                    searchPage++
+                    getHoldings(searchList, searchPage, contentType)
+                    loadMoreSimilar = false
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.yandex.stockobserver.repository
 
+import android.util.Log
 import com.yandex.stockobserver.api.FinhubApi
 import com.yandex.stockobserver.api.QuoteWebsocket
 import com.yandex.stockobserver.db.Storage
@@ -18,7 +19,7 @@ import java.math.RoundingMode
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
+
 class HoldingRepositoryImpl @Inject constructor(
     private val storage: Storage,
     private val api: FinhubApi,
@@ -27,7 +28,7 @@ class HoldingRepositoryImpl @Inject constructor(
 
     private val batchSize = 15
 
-    fun getVOOCompanies(holdingsList: ETFHoldings, page: Int): Flow<List<CompanyInfo>> {
+    override fun getVOOCompanies(holdingsList: ETFHoldings, page: Int): Flow<List<CompanyInfo>> {
         return flow {
             var result = emptyList<CompanyInfo>()
             val firstElement = (page) * batchSize
@@ -46,21 +47,21 @@ class HoldingRepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    fun getFavorites(): Flow<List<CompanyInfo>> {
+    override fun getFavorites(): Flow<List<CompanyInfo>> {
         return flow {
             emit(storage.getAllFavorite().map { it.convert() })
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun addFavorite(companyInfo: CompanyInfo) {
+    override suspend fun addFavorite(companyInfo: CompanyInfo) {
         storage.insertFavorite(CompanyInfoEntity(companyInfo))
     }
 
-    suspend fun deleteFavorite(symbol: String) {
+    override suspend fun deleteFavorite(symbol: String) {
         storage.deleteFromFavorite(symbol)
     }
 
-    fun getPopularHint(holdingsList: ETFHoldings): List<Hint> {
+    override fun getPopularHint(holdingsList: ETFHoldings): List<Hint> {
         val hintList = mutableListOf<Hint>()
         val popular = holdingsList.holdings.shuffled().subList(0, 10)
         popular.forEach {
@@ -69,17 +70,17 @@ class HoldingRepositoryImpl @Inject constructor(
         return hintList
     }
 
-    suspend fun getLookingHint():List<Hint> = storage.getAllHints()
+    override suspend fun getLookingHint(): List<Hint> = storage.getAllHints()
 
-    suspend fun initQuoteSocket(holdingsList: ETFHoldings){
+    suspend fun initQuoteSocket(holdingsList: ETFHoldings) {
         quoteWebsocket.initWebSocket(holdingsList)
     }
 
-    suspend fun closeQuoteWebSocket(){
+    suspend fun closeQuoteWebSocket() {
         quoteWebsocket.webSocketClient.close()
     }
 
-    suspend fun addNewHint(symbol: String){
+    override suspend fun addNewHint(symbol: String) {
         storage.addHint(Hint(symbol))
     }
 
@@ -119,18 +120,11 @@ class HoldingRepositoryImpl @Inject constructor(
         return result
     }
 
-
-    suspend fun getSimilar(symbol: String): SearchSimilar {
+    override suspend fun getSimilar(symbol: String): SearchSimilar {
         return api.getSimilarSymbol(symbol).convert()
     }
 
-   /* fun getSimilarCompanies(searchSimilar: SearchSimilar,page: Int):Flow<List<CompanyInfo>>{
-        return flow {
-
-        }
-    }*/
-
-    suspend fun getHolding(page: Int): ETFHoldings {
+    override suspend fun getHolding(page: Int): ETFHoldings {
         return api.getHoldings(page).convert()
     }
 
@@ -147,7 +141,7 @@ class HoldingRepositoryImpl @Inject constructor(
         return api.getQuote(symbol).converter()
     }
 
-    private suspend fun isFavorite(symbol: String):Boolean{
+    private suspend fun isFavorite(symbol: String): Boolean {
         return storage.isFavorite(symbol)
     }
 }
