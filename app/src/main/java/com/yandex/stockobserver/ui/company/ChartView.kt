@@ -18,8 +18,8 @@ class ChartView @JvmOverloads constructor(
         inflate(context, R.layout.chart_view, this)
     }
 
-    fun createView(){
-
+    fun createView() {
+        //https://finnhub.io/docs/api/earnings-calendar
     }
 
 }

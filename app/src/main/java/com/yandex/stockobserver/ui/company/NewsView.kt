@@ -18,7 +18,7 @@ class NewsView @JvmOverloads constructor(
     }
 
     fun createView() {
-
+        //https://mboum.com/api/v1/ne/news/?symbol=AAPL&apikey=demo
     }
 
 }
