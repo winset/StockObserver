@@ -8,12 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yandex.stockobserver.R
 import com.yandex.stockobserver.genralInfo.Hint
 
-class HintHolder(view: View) : RecyclerView.ViewHolder(view) {
+class HintHolder(view: View,
+                 private val onHintClick:(String)->Unit) : RecyclerView.ViewHolder(view) {
     companion object {
-        fun create(parent: ViewGroup): HintHolder {
+        fun create(parent: ViewGroup,onHintClick:(String)->Unit): HintHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.hint_item, parent, false)
-            return HintHolder(view)
+            return HintHolder(view,onHintClick)
         }
     }
 
@@ -21,5 +22,8 @@ class HintHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(hint: Hint) {
         hintTV.text = hint.hint
+        itemView.setOnClickListener {
+            onHintClick(hint.hint)
+        }
     }
 }

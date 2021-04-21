@@ -1,6 +1,6 @@
 package com.yandex.stockobserver.di
 
-import com.yandex.stockobserver.ui.MainFragment
+import com.yandex.stockobserver.ui.main.MainFragment
 import dagger.Component
 import javax.inject.Singleton
 

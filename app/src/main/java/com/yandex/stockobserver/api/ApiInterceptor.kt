@@ -53,10 +53,36 @@ class ApiInterceptor : Interceptor {
             response = chain.proceed(superNewUrl)
         }
 
+        if (isHaveAccess(response.code)){
+            val currentToken = BuildConfig.SANDBOX_API_KEY
+            val newRequest = originalUrl.newBuilder()
+                .addQueryParameter("token", currentToken).build()
+            val superNewUrl = original.newBuilder().url(newRequest).build()
+            response = chain.proceed(superNewUrl)
+        }
+
+        if (isServerError(response.code)){
+            return Response.Builder()
+                .request(original)
+                .protocol(Protocol.HTTP_1_1)
+                .code(999)
+                .message("\"Server problem((\"")
+                .body(ResponseBody.create(null, "Server problem((")).build()
+        }
+
         return response
     }
 
     private fun isLimitReached(code: Int): Boolean {
         return code == 429
     }
+
+    private fun isHaveAccess(code: Int):Boolean{
+        return code == 403
+    }
+
+    private fun isServerError(code: Int):Boolean{
+        return code in 500..599
+    }
+
 }

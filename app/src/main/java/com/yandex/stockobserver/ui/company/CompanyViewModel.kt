@@ -1,4 +1,4 @@
-package com.yandex.stockobserver
+package com.yandex.stockobserver.ui.company
 
 import androidx.lifecycle.ViewModel
 import javax.inject.Inject

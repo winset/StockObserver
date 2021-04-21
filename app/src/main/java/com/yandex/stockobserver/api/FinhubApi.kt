@@ -19,6 +19,11 @@ interface FinhubApi {
         @Query("cusip") cusip:String
     ): CompanyGeneralDto
 
+    @GET("stock/profile2")
+    suspend fun getCompanyGeneralInfoBySymbol(
+        @Query("symbol") symbol:String
+    ): CompanyGeneralDto
+
     @GET("quote")
     suspend fun getQuote(
         @Query("symbol") symbol:String

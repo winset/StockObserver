@@ -5,7 +5,6 @@ import com.yandex.stockobserver.BuildConfig
 import com.yandex.stockobserver.api.ApiInterceptor
 import com.yandex.stockobserver.api.FinhubApi
 import com.yandex.stockobserver.api.QuoteWebsocket
-import com.yandex.stockobserver.ui.MainFragment
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient

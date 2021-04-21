@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.yandex.stockobserver.ui.MainFragment"
+        android:name="com.yandex.stockobserver.ui.main.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/main_fragment">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/companyFragment"
-        android:name="com.yandex.stockobserver.ui.CompanyFragment"
+        android:name="com.yandex.stockobserver.ui.company.CompanyFragment"
         android:label="company_fragment"
         tools:layout="@layout/company_fragment" />
 </navigation>

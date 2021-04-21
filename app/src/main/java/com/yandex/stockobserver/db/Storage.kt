@@ -20,10 +20,14 @@ class Storage(private val database: StockDatabase) {
         return favoriteDao.getAllFavorite()
     }
 
-    suspend fun deleteFromFavorite(cusip: String) {
+    suspend fun deleteFromFavorite(symbol: String) {
         database.withTransaction {
-            favoriteDao.deleteFavorite(cusip)
+            favoriteDao.deleteFavorite(symbol)
         }
+    }
+
+    suspend fun isFavorite(symbol:String):Boolean{
+        return favoriteDao.isFavorite(symbol)
     }
 
     suspend fun addHint(hint: Hint) {
@@ -37,5 +41,10 @@ class Storage(private val database: StockDatabase) {
             hintDao.deleteFavorite(hint = hint.hint)
         }
     }
+
+      suspend fun getAllHints():List<Hint>{
+        return hintDao.getAllHint().map { it.convert() }
+    }
+
 
 }

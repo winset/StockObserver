@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yandex.stockobserver.genralInfo.CompanyInfo
 import com.yandex.stockobserver.genralInfo.Hint
 
-class HintAdapter(): RecyclerView.Adapter<HintHolder>() {
+class HintAdapter(private val onHintClick:(String)->Unit): RecyclerView.Adapter<HintHolder>() {
 
     private var hintList = mutableListOf<Hint>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HintHolder {
-       return HintHolder.create(parent)
+       return HintHolder.create(parent,onHintClick)
     }
 
     override fun onBindViewHolder(holder: HintHolder, position: Int) {

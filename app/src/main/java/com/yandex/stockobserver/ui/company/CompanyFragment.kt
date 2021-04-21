@@ -1,21 +1,12 @@
-package com.yandex.stockobserver.ui
+package com.yandex.stockobserver.ui.company
 
-import android.graphics.Typeface
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
-import com.yandex.stockobserver.CompanyViewModel
-import com.yandex.stockobserver.MainViewModel
 import com.yandex.stockobserver.R
 import com.yandex.stockobserver.databinding.CompanyFragmentBinding
 import com.yandex.stockobserver.ui.adapter.CompanyPagerAdapter

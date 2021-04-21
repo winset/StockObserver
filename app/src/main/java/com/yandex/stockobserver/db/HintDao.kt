@@ -11,10 +11,10 @@ import com.yandex.stockobserver.genralInfo.entitys.HintEntity
 interface HintDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertHint(hintEntity: HintEntity)
+     fun insertHint(hintEntity: HintEntity)
 
     @Query("SELECT * FROM hintdb")
-    fun getAllHint():List<HintEntity>
+    suspend fun getAllHint():List<HintEntity>
 
     @Query("DELETE FROM hintdb WHERE hint =:hint")
     fun deleteFavorite(hint:String)

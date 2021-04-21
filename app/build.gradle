@@ -18,6 +18,7 @@ android {
         buildConfigField 'String', 'BASE_URL', '"https://finnhub.io/api/v1/"'
         buildConfigField 'String', 'API_KEY', '"c0v09bv48v6or05b9hvg"'
         buildConfigField 'String', 'API_KEY1', '"c1c9m1f48v6scqmqoqtg"'
+        buildConfigField 'String', 'SANDBOX_API_KEY', '"sandbox_c1c9m1f48v6scqmqoqu0"'
         buildConfigField 'String', 'WEB_SOKET_URL', '"wss://ws.finnhub.io?token=c1c9m1f48v6scqmqoqtg"'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

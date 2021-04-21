@@ -13,12 +13,10 @@ class StockApplication:Application() {
         lateinit var stockComponent: AppComponent
     }
 
-
     override fun onCreate() {
         super.onCreate()
         stockComponent = initDagger()
     }
-
 
     private fun initDagger():AppComponent{
         return DaggerAppComponent.builder()

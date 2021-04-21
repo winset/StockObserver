@@ -2,11 +2,12 @@ package com.yandex.stockobserver.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.yandex.stockobserver.CompanyViewModel
-import com.yandex.stockobserver.MainViewModel
+import com.yandex.stockobserver.repository.HoldingRepository
+import com.yandex.stockobserver.repository.HoldingRepositoryImpl
+import com.yandex.stockobserver.ui.company.CompanyViewModel
+import com.yandex.stockobserver.ui.main.MainViewModel
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.multibindings.IntoMap
 import javax.inject.Singleton
 
@@ -25,4 +26,7 @@ abstract class ViewModelModule{
 
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+
+    @Binds
+    abstract fun bindMainPresenter(holdingRepositoryImpl: HoldingRepositoryImpl): HoldingRepository
 }
