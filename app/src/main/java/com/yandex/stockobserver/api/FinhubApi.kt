@@ -1,9 +1,7 @@
 package com.yandex.stockobserver.api
 
-import com.yandex.stockobserver.genralInfo.dto.CompanyGeneralDto
-import com.yandex.stockobserver.genralInfo.dto.ETFHoldingsDto
-import com.yandex.stockobserver.genralInfo.dto.QuoteDto
-import com.yandex.stockobserver.genralInfo.dto.SearchSimilarDto
+import com.yandex.stockobserver.genralInfo.StockCandle
+import com.yandex.stockobserver.genralInfo.dto.*
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -31,6 +29,15 @@ interface FinhubApi {
 
     @GET("search")
     suspend fun getSimilarSymbol(
-        @Query("q") symbol: String
+        @Query("q") q: String
     ):SearchSimilarDto
+
+    @GET("stock/candle")
+    suspend fun getStockCandle(
+        @Query("symbol")symbol: String,
+        @Query("resolution") resolution:String,
+        @Query("from") from:String,
+        @Query("to") to:String
+    ):StockCandleDto
+
 }

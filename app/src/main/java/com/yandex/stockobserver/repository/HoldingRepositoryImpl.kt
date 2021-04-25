@@ -94,12 +94,15 @@ class HoldingRepositoryImpl @Inject constructor(
         val companyInfo = mutableListOf<CompanyGeneral>()
         val quotes = mutableListOf<Quote>()
         val subList = holdingsList.holdings.subList(firstIndex, lastIndex)
-        subList.forEach {
+      /*  subList.forEach {
             companyInfo.add(getGeneralInfoBySymbol(it.symbol))
             quotes.add(getQuote(it.symbol))
-        }
+        }*/
 
         subList.forEachIndexed { index, holdingsItem ->
+            companyInfo.add(getGeneralInfoBySymbol(holdingsItem.symbol))
+            quotes.add(getQuote(holdingsItem.symbol))
+
             val context = MathContext(5, RoundingMode.HALF_UP)
             val openPrice = BigDecimal(quotes[index].prevClosePrice, context).toDouble()
             val currentPrice = BigDecimal(quotes[index].currentPrice, context).toDouble()

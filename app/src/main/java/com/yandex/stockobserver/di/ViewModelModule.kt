@@ -2,6 +2,8 @@ package com.yandex.stockobserver.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.yandex.stockobserver.repository.CompanyRepository
+import com.yandex.stockobserver.repository.CompanyRepositoryImpl
 import com.yandex.stockobserver.repository.HoldingRepository
 import com.yandex.stockobserver.repository.HoldingRepositoryImpl
 import com.yandex.stockobserver.ui.company.CompanyViewModel
@@ -28,5 +30,8 @@ abstract class ViewModelModule{
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @Binds
-    abstract fun bindMainPresenter(holdingRepositoryImpl: HoldingRepositoryImpl): HoldingRepository
+    abstract fun bindMainRepository(holdingRepositoryImpl: HoldingRepositoryImpl): HoldingRepository
+
+    @Binds
+    abstract fun bindCompanyRepository(companyRepositoryImpl: CompanyRepositoryImpl): CompanyRepository
 }

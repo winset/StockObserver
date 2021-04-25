@@ -10,4 +10,10 @@
     <string name="summary">Summary</string>
     <string name="news">News</string>
     <string name="forecasts">Forecasts</string>
+    <string name="_1">1</string>
+    <string name="_15">15</string>
+    <string name="hour">H</string>
+    <string name="day">D</string>
+    <string name="week">W</string>
+    <string name="month">M</string>
 </resources>

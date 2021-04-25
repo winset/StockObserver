@@ -147,7 +147,7 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
             val holdingsItems = mutableListOf<HoldingsItem>()
             searchSimilar.result.forEach {
                 holdingsItems.add(
-                    HoldingsItem(it.symbol, "", "", 0f, 0.0, 0f, "")
+                    HoldingsItem(it.displaySymbol, "", "", 0f, 0.0, 0f, "")
                 )
             }
             val holdingsList = ETFHoldings("", "", holdingsItems, searchSimilar.count)
