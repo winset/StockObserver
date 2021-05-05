@@ -4,12 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.yandex.stockobserver.R
 import com.yandex.stockobserver.databinding.ChartViewBinding
-import com.yandex.stockobserver.databinding.CompanyFragmentBinding
 import com.yandex.stockobserver.genralInfo.StockCandle
 
 class ChartView @JvmOverloads constructor(
@@ -19,20 +15,16 @@ class ChartView @JvmOverloads constructor(
     context, attrs, defAttributeSet
 ) {
     private val TAG: String = "ChartView"
-    private var binding:ChartViewBinding
+    private var binding:ChartViewBinding =
+        ChartViewBinding.inflate(LayoutInflater.from(context),this)
 
     init {
-        binding = ChartViewBinding.inflate(LayoutInflater.from(context),this)
-       // addView(binding.root)
+        // addView(binding.root)
     }
 
     fun createView(stockCandle: StockCandle) {
-        //https://finnhub.io/docs/api/earnings-calendar
         Log.d(TAG, "createView: ")
         binding.chart.setData(stockCandle)
     }
-
-
-
 
 }

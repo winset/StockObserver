@@ -101,11 +101,21 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
         }
     }
 
-    private fun getFavorites() {
+     fun getFavorites() {
         viewModelScope.launch {
             holdingRepository.getFavorites().collect {
                 _favouriteCompanies.value = it
             }
+        }
+    }
+
+    fun updateFavoriteInVooList(symbol:String,isFavorite: Boolean){
+        viewModelScope.launch {
+            newVooComp.forEach {
+                if (it.symbol == symbol)
+                    it.isFavorite = isFavorite
+            }
+            _vooCompanies.value = newVooComp
         }
     }
 

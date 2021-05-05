@@ -1,24 +1,30 @@
 package com.yandex.stockobserver.ui.company
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.yandex.stockobserver.R
 import com.yandex.stockobserver.StockApplication
 import com.yandex.stockobserver.databinding.CompanyFragmentBinding
 import com.yandex.stockobserver.di.injectViewModel
 import com.yandex.stockobserver.ui.adapter.CompanyPagerAdapter
-import com.yandex.stockobserver.ui.main.MainViewModel
 import javax.inject.Inject
 
 
 class CompanyFragment : Fragment() {
     private lateinit var binding: CompanyFragmentBinding
+    private val args by navArgs<CompanyFragmentArgs>()
+    private lateinit var navController: NavController
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -34,7 +40,9 @@ class CompanyFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        navController = findNavController()
         StockApplication.stockComponent.inject(this)
+        viewModel.setGeneralInfo(args.companyInformation)
         binding = CompanyFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -45,10 +53,31 @@ class CompanyFragment : Fragment() {
         tabLayoutInit()
         backButton()
         initChartView(chartView)
+        initCompanySymbol(args.companyInformation.symbol)
+        initCompanyName(args.companyInformation.name)
+        initNews(newsView)
+        initIsFavorite()
     }
 
     private fun getInitInfo() {
 
+    }
+
+    private fun initCompanySymbol(symbol: String) {
+        binding.companySymbolFg.text = symbol
+    }
+
+    private fun initCompanyName(name: String) {
+        binding.companyNameFg.text = name
+    }
+
+    private fun initIsFavorite() {
+        binding.companyFavorite.setOnClickListener {
+            viewModel.onFavoriteClick()
+        }
+        viewModel.isFavorite.observe(viewLifecycleOwner, Observer {
+            binding.companyFavorite.isSelected = it
+        })
     }
 
     private fun viewPagerInit() {
@@ -73,8 +102,26 @@ class CompanyFragment : Fragment() {
 
     private fun backButton() {
         binding.backBtnFg.setOnClickListener {
-            activity?.onBackPressed()
+            Log.d("CompanyFragment", "backButton: ")
+            navigateToMain()
         }
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            Log.d("CompanyFragment", "backButton11: ")
+            navigateToMain()
+        }
+    }
+
+    private fun navigateToMain() {
+        viewModel.isMainNeedUpdate()
+        viewModel.isMainFragmentNeedUpdate.observe(viewLifecycleOwner, Observer {
+            val directions = CompanyFragmentDirections
+                .actionCompanyFragmentToMainFragment(
+                    args.companyInformation.symbol,
+                    viewModel.isFavorite.value!!,
+                    it
+                )
+            findNavController().navigate(directions)
+        })
     }
 
     private fun initChartView(chartView: ChartView) {
@@ -83,4 +130,10 @@ class CompanyFragment : Fragment() {
         })
     }
 
+    private fun initNews(newsView: NewsView) {
+        newsView.createView(viewModel,navController)
+        viewModel.news.observe(viewLifecycleOwner, Observer {
+            newsView.addDataToRecycler(it)
+        })
+    }
 }

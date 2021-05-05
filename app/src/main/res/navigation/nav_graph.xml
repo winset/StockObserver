@@ -10,14 +10,65 @@
         android:name="com.yandex.stockobserver.ui.main.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/main_fragment">
+        <argument
+            android:name="symbol"
+            app:argType="string" />
+        <argument
+            android:name="isFavorite"
+            app:argType="boolean" />
+        <argument
+            android:name="isNeedToUpdate"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_mainFragment_to_companyFragment"
-            app:destination="@id/companyFragment" />
+            app:destination="@id/companyFragment"
+            app:launchSingleTop="true">
+            <argument
+                android:name="companyInformation"
+                app:argType="com.yandex.stockobserver.genralInfo.CompanyInfo" />
+        </action>
     </fragment>
 
     <fragment
         android:id="@+id/companyFragment"
         android:name="com.yandex.stockobserver.ui.company.CompanyFragment"
         android:label="company_fragment"
-        tools:layout="@layout/company_fragment" />
+        tools:layout="@layout/company_fragment">
+        <argument
+            android:name="companyInformation"
+            app:argType="com.yandex.stockobserver.genralInfo.CompanyInfo" />
+        <action
+            android:id="@+id/action_companyFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:launchSingleTop="true">
+            <argument
+                android:name="symbol"
+                app:argType="string" />
+            <argument
+                android:name="isFavorite"
+                app:argType="boolean" />
+            <argument
+                android:name="isNeedToUpdate"
+                app:argType="boolean"
+                android:defaultValue="false" />
+
+        </action>
+        <action
+            android:id="@+id/action_companyFragment_to_webViewFragment"
+            app:destination="@id/webViewFragment"
+            app:launchSingleTop="true">
+            <argument
+                android:name="url"
+                app:argType="string" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/webViewFragment"
+        android:name="com.yandex.stockobserver.ui.webView.WebViewFragment"
+        android:label="WebViewFragment" >
+        <argument
+            android:name="url"
+            app:argType="string" />
+
+    </fragment>
 </navigation>

@@ -39,8 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/company_symbol_fg"
-        android:layout_alignStart="@id/company_symbol_fg"
-        android:layout_alignEnd="@id/company_symbol_fg"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="4dp"
         android:gravity="center"
         android:textColor="@color/black_text"
@@ -60,7 +59,8 @@
         android:paddingEnd="1dp"
         android:paddingBottom="12dp"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_star" />
+        android:src="@drawable/ic_path"
+        app:tint = "@color/company_star_seector"/>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs_fg"
@@ -75,7 +75,7 @@
         app:tabIndicator="@null"
         />
 
-    <androidx.viewpager.widget.ViewPager
+    <com.yandex.stockobserver.ui.company.CustomViewPager
         android:id="@+id/detail_info_fg"
         android:layout_below="@id/tabs_fg"
         android:layout_width="match_parent"

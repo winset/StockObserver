@@ -22,7 +22,7 @@ class Chart @JvmOverloads constructor(
 
     inner class CsCvGestureDetector : GestureDetector.SimpleOnGestureListener() {
         override fun onScroll(p0: MotionEvent?, p1: MotionEvent?, dx: Float, dy: Float): Boolean {
-            //     Log.d("Chart", "onScroll: " + dx + " " + dy)
+            Log.d("Chart", "onScroll: " + dx + " " + dy)
             originX += dx
             originY += dy
             invalidate()
@@ -39,8 +39,7 @@ class Chart @JvmOverloads constructor(
     }
 
     init {
-        isHorizontalScrollBarEnabled = true;
-        isVerticalScrollBarEnabled = true;
+        isHorizontalScrollBarEnabled = true
     }
 
 
@@ -51,7 +50,7 @@ class Chart @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         drawPath(canvas)
-        drawTimeline(canvas, originX, originY)
+        drawTimeline(canvas)
     }
 
     fun setData(data: StockCandle) {
@@ -89,28 +88,27 @@ class Chart @JvmOverloads constructor(
 
 
             val path = Path()
-           // path.moveTo(widthF, heightF)
             path.moveTo(0f, heightF)
             data.openPrice.forEachIndexed { index, _openPrice ->
-                val coordY = getYCoordFromPrice(_openPrice, lowestValue, higherValue, height-200)
-                val coordX = ((index ) * offsetX)
+                val coordY = getYCoordFromPrice(_openPrice, lowestValue, higherValue, height - 200)
+                val coordX = if (originX + widthF < widthF)
+                    ((index) * offsetX)
+                else
+                    ((index + (originX / 2)) * offsetX)
+
                 Log.d("TAG", "drawPath: " + coordX + " " + coordY)
-                if (index==0){
-                   // path.moveTo(coordX.toFloat(), heightF)
+                if (index == 0) {
                     path.lineTo(coordX.toFloat(), coordY)
                 } else
                     path.lineTo(coordX.toFloat(), coordY)
-                if (index==data.openPrice.size-1){
-                    path.lineTo(widthF,coordY)
-                    path.lineTo(widthF,heightF)
+                if (index == data.openPrice.size - 1) {
+                    path.lineTo(widthF, coordY)
+                    path.lineTo(widthF, heightF)
                 }
-
-
             }
 
             canvas.drawPath(path, paint)
             canvas.drawPath(path, paintStroke)
-
         } else {
             Log.d("chart", "drawPath: data not init")
         }
@@ -122,22 +120,21 @@ class Chart @JvmOverloads constructor(
         lowestValue: Double,
         higherValue: Double,
         height: Int
-    ):Float{
-        return (height + ((price-lowestValue)/(higherValue-lowestValue) *-height)).toFloat()
+    ): Float {
+        return (height + ((price - lowestValue) / (higherValue - lowestValue) * -height)).toFloat()
     }
 
-    private fun drawTimeline(canvas: Canvas, originX: Float, originY: Float) {
+    private fun drawTimeline(canvas: Canvas) {
         val w = width - originX
         val count = 100f
         val bottomY = height - 60
         val topY = height - 120
-        val offsetX = (width / 10)// it can be used for scale
+        val offsetX = (width / 10)  //it can be used for scale
         val paint = Paint().apply {
             color = Color.BLACK
             style = Paint.Style.FILL_AND_STROKE
             strokeWidth = 5f
         }
-
 
         val textBoundRect = Rect()
         val textPaint = Paint().apply {
@@ -147,24 +144,21 @@ class Chart @JvmOverloads constructor(
             textSize = 30f
         }
 
-
         val points = mutableListOf<Float>()
         for (i in 0 until count.toInt()) {
-
-
             val text = "12" + i
             textPaint.getTextBounds(text, 0, text.length, textBoundRect)
 
-            points.add(((i + (originX / 2)) * offsetX))
+            points.add(((i + (originX / 4)) * offsetX))
             points.add(bottomY.toFloat())
-            points.add(((i + (originX / 2)) * offsetX))
+            points.add(((i + (originX / 4)) * offsetX))
             points.add(topY.toFloat())
             val textWidth = textPaint.measureText(text);
             val textHeight = textBoundRect.height();
 
             canvas.drawText(
                 text,
-                (i + (originX / 2)) * offsetX - (textWidth / 2f),
+                (i + (originX / 4)) * offsetX - (textWidth / 2f),
                 bottomY + textHeight + (textHeight / 2f),
                 textPaint
             )
@@ -174,9 +168,8 @@ class Chart @JvmOverloads constructor(
 
     private fun createShader(): Shader {
         return LinearGradient(
-            /*width.toFloat() / 2*/0f, 0f, /*width.toFloat() / 2*/0f, height.toFloat(),
-            Color.GRAY, Color.WHITE, Shader.TileMode.MIRROR
-        )
+            0f, 0f, 0f, height.toFloat(),
+            Color.GRAY, Color.WHITE, Shader.TileMode.MIRROR)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {

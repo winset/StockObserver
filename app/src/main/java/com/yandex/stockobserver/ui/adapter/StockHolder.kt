@@ -14,7 +14,7 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 
 class StockHolder(
     view: View,
-    private val onItemClick: (String) -> Unit,
+    private val onItemClick: (CompanyInfo) -> Unit,
     private val onFavoriteClick: (CompanyInfo, Int, Boolean, Int) -> Unit,
     private val adapterHashCode: Int
 ) : RecyclerView.ViewHolder(view) {
@@ -29,12 +29,12 @@ class StockHolder(
     companion object {
         fun create(
             parent: ViewGroup,
-            onItemClick: (String) -> Unit,
+            onItemClick: (CompanyInfo) -> Unit,
             onFavoriteClick: (CompanyInfo, Int, Boolean, Int) -> Unit,
             adapterHashCode: Int
         ): StockHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.top_watched_item, parent, false)
+                .inflate(R.layout.stock_item, parent, false)
             return StockHolder(view, onItemClick, onFavoriteClick, adapterHashCode)
         }
     }
@@ -45,7 +45,7 @@ class StockHolder(
         price.text = "$" + item.price
 
         itemView.setOnClickListener {
-            onItemClick(item.symbol)
+            onItemClick(item)
         }
 
         favorite.isSelected = item.isFavorite
@@ -95,6 +95,5 @@ class StockHolder(
         } else {
             layout.background = itemView.resources.getDrawable(R.drawable.rounded_background)
         }
-
     }
 }

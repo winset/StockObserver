@@ -94,10 +94,6 @@ class HoldingRepositoryImpl @Inject constructor(
         val companyInfo = mutableListOf<CompanyGeneral>()
         val quotes = mutableListOf<Quote>()
         val subList = holdingsList.holdings.subList(firstIndex, lastIndex)
-      /*  subList.forEach {
-            companyInfo.add(getGeneralInfoBySymbol(it.symbol))
-            quotes.add(getQuote(it.symbol))
-        }*/
 
         subList.forEachIndexed { index, holdingsItem ->
             companyInfo.add(getGeneralInfoBySymbol(holdingsItem.symbol))

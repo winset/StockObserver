@@ -1,6 +1,9 @@
 package com.yandex.stockobserver.genralInfo
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 class CompanyInfo(
     val symbol: String,
     val cusip: String,
@@ -9,4 +12,4 @@ class CompanyInfo(
     val price:Double,
     val margin:Double,
     var isFavorite:Boolean = false
-)
+) : Parcelable

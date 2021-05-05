@@ -3,8 +3,13 @@ package com.yandex.stockobserver.api
 import com.yandex.stockobserver.genralInfo.StockCandle
 import com.yandex.stockobserver.genralInfo.dto.*
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.Query
 
+const val CACHE_CONTROL_HEADER = "Cache-Control"
+const val CACHE_CONTROL_NO_CACHE = "no-cache"
+// @Headers("$CACHE_CONTROL_HEADER: $CACHE_CONTROL_NO_CACHE") this  can be used if we don't need to cache some data
 interface FinhubApi {
 
     @GET("etf/holdings?symbol=VOO")
@@ -39,5 +44,17 @@ interface FinhubApi {
         @Query("from") from:String,
         @Query("to") to:String
     ):StockCandleDto
+
+    @GET("stock/executive")
+    suspend fun getCompanyExecutive(
+        @Query("symbol")symbol: String
+    ):CompanyExecutiveDto
+
+    @GET("company-news")
+    suspend fun getCompanyNews(
+        @Query("symbol")symbol: String,
+        @Query("from")dateFrom:String,
+        @Query("to")dateTo:String
+    ):List<CompanyNewsItemDto>
 
 }

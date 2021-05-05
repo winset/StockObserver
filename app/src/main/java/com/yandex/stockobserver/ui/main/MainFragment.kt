@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -27,12 +28,14 @@ import com.yandex.stockobserver.genralInfo.CompanyInfo
 import com.yandex.stockobserver.ui.adapter.HintAdapter
 import com.yandex.stockobserver.ui.adapter.StockAdapter
 import com.yandex.stockobserver.ui.adapter.StoksPagerAdapter
+import com.yandex.stockobserver.ui.company.CompanyFragmentArgs
 import javax.inject.Inject
 
 
 class MainFragment : Fragment() {
     private lateinit var binding: MainFragmentBinding
     private lateinit var navController: NavController
+    private val args by navArgs<MainFragmentArgs>()
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -66,6 +69,14 @@ class MainFragment : Fragment() {
         initSearchView()
         setSearchHoldings()
         showError()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (args.isNeedToUpdate){
+            viewModel.updateFavoriteInVooList(args.symbol, args.isFavorite)
+            viewModel.getFavorites()
+        }
     }
 
     private fun initPager() {
@@ -128,7 +139,7 @@ class MainFragment : Fragment() {
 
     private fun initSearchView() {
         var searchImageView: ImageView? = null
-        var closeImageView:ImageView? = null
+        var closeImageView: ImageView? = null
         binding.searchView.setOnQueryTextFocusChangeListener { view, b ->
 
             if (b && view.isEnabled()) {
@@ -137,7 +148,8 @@ class MainFragment : Fragment() {
 
                 binding.searchFeature.visibility = View.VISIBLE
                 val searchImgId = resources.getIdentifier("android:id/search_mag_icon", null, null)
-                val searchCloseButtonId: Int = resources.getIdentifier("android:id/search_close_btn", null, null)
+                val searchCloseButtonId: Int =
+                    resources.getIdentifier("android:id/search_close_btn", null, null)
                 closeImageView = binding.searchView.findViewById(searchCloseButtonId)
                 searchImageView = binding.searchView.findViewById(searchImgId)
                 if (searchImageView != null) {
@@ -149,7 +161,7 @@ class MainFragment : Fragment() {
                         binding.companiesPager.visibility = View.VISIBLE
                     }
 
-                    if (closeImageView!=null){
+                    if (closeImageView != null) {
                         closeImageView!!.setOnClickListener {
                             binding.searchView.isIconified = true
                             binding.searchView.clearFocus()
@@ -198,7 +210,7 @@ class MainFragment : Fragment() {
     }
 
 
-    private fun recyclerScrollListener(contentType:String): RecyclerView.OnScrollListener {
+    private fun recyclerScrollListener(contentType: String): RecyclerView.OnScrollListener {
         var pastVisiblesItems: Int
         var visibleItemCount: Int
         var totalItemCount: Int
@@ -253,18 +265,20 @@ class MainFragment : Fragment() {
         viewModel.searchCompanies.observe(viewLifecycleOwner, Observer {
             binding.companiesPager.visibility = View.GONE
             binding.searchCompanies.visibility = View.VISIBLE
-            Log.d("TAG", "setSearchHoldings: "+ it.first().name)
+            Log.d("TAG", "setSearchHoldings: " + it.first().name)
             searchAdapter.updateData(it)
         })
     }
 
-    private fun onItemClick(symbol: String) {
-        viewModel.onItemClick(symbol)
-        findNavController().navigate(R.id.action_mainFragment_to_companyFragment)
+    private fun onItemClick(companyInfo: CompanyInfo) {
+        viewModel.onItemClick(companyInfo.symbol)
+        val directions = MainFragmentDirections.actionMainFragmentToCompanyFragment(companyInfo)
+        findNavController().navigate(directions)
+
     }
 
-    private fun onHintClick(hint:String){
-        binding.searchView.setQuery(hint,true)
+    private fun onHintClick(hint: String) {
+        binding.searchView.setQuery(hint, true)
     }
 
     private fun onFavoriteClick(
@@ -309,6 +323,6 @@ class MainFragment : Fragment() {
     companion object {
         const val FAVORITE = "FAVORITE"
         const val TOP_STOCKS = "TOP_STOCKS"
-        const val SIMILAR_SEARCH= "SIMILAR_SEARCH"
+        const val SIMILAR_SEARCH = "SIMILAR_SEARCH"
     }
 }
