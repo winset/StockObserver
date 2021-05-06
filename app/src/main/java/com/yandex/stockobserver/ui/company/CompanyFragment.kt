@@ -57,6 +57,7 @@ class CompanyFragment : Fragment() {
         initCompanyName(args.companyInformation.name)
         initNews(newsView)
         initIsFavorite()
+        initSummary(summaryView)
     }
 
     private fun getInitInfo() {
@@ -135,5 +136,18 @@ class CompanyFragment : Fragment() {
         viewModel.news.observe(viewLifecycleOwner, Observer {
             newsView.addDataToRecycler(it)
         })
+        viewModel.haveNews.observe(viewLifecycleOwner, Observer {
+            if (it==false){
+                newsView.showNoNewsMsg()
+            }
+        })
     }
+
+    private fun initSummary(summaryView: SummaryView){
+        viewModel.summary.observe(viewLifecycleOwner, Observer {
+                summaryView.createView()
+        })
+    }
+
+
 }

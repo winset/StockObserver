@@ -45,11 +45,6 @@ interface FinhubApi {
         @Query("to") to:String
     ):StockCandleDto
 
-    @GET("stock/executive")
-    suspend fun getCompanyExecutive(
-        @Query("symbol")symbol: String
-    ):CompanyExecutiveDto
-
     @GET("company-news")
     suspend fun getCompanyNews(
         @Query("symbol")symbol: String,

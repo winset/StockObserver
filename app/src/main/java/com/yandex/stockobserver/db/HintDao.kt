@@ -19,4 +19,6 @@ interface HintDao {
     @Query("DELETE FROM hintdb WHERE hint =:hint")
     fun deleteFavorite(hint:String)
 
+    @Query("SELECT EXISTS (SELECT 1 FROM hintdb WHERE hint=:symbol)")
+    suspend fun isHintInDb(symbol: String): Boolean
 }

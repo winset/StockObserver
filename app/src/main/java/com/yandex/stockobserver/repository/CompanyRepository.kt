@@ -6,7 +6,7 @@ interface CompanyRepository {
     suspend fun getStockCandle(symbol: String): StockCandle
     suspend fun addFavorite(companyInfo: CompanyInfo)
     suspend fun deleteFavorite(symbol: String)
-    suspend fun getExecutive(symbol: String): CompanyExecutive
+    suspend fun getGeneralInfoBySymbol(symbol: String): CompanyGeneral
     suspend fun getNews(
         symbol: String,
         dateFrom: String,

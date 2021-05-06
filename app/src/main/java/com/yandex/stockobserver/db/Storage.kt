@@ -46,5 +46,10 @@ class Storage(private val database: StockDatabase) {
         return hintDao.getAllHint().map { it.convert() }
     }
 
+    suspend fun isHintInDb(symbol: String):Boolean{
+        return hintDao.isHintInDb(symbol)
+    }
+
+
 
 }

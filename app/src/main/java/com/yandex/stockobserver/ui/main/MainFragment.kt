@@ -178,7 +178,6 @@ class MainFragment : Fragment() {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 if (!p0.isNullOrEmpty()) {
                     viewModel.search(p0)
-                    viewModel.addLookingForHint(p0)
                 }
                 return false
             }
@@ -207,8 +206,16 @@ class MainFragment : Fragment() {
         viewModel.lookingHint.observe(viewLifecycleOwner, Observer {
             lookingHintAdapter.updateData(it)
         })
+        viewModel.isHaveUserHint.observe(viewLifecycleOwner, Observer {
+            if (it){
+                binding.lookingForText.visibility = View.VISIBLE
+                binding.lookingForList.visibility = View.VISIBLE
+            }else{
+                binding.lookingForText.visibility = View.GONE
+                binding.lookingForList.visibility = View.GONE
+            }
+        })
     }
-
 
     private fun recyclerScrollListener(contentType: String): RecyclerView.OnScrollListener {
         var pastVisiblesItems: Int

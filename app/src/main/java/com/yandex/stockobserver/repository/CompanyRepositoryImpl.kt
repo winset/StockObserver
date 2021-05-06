@@ -25,11 +25,12 @@ class CompanyRepositoryImpl@Inject constructor(
         storage.deleteFromFavorite(symbol)
     }
 
-    override suspend fun getExecutive(symbol: String): CompanyExecutive {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun getNews(symbol: String, dateFrom: String, dateTo: String): List<CompanyNewsItem> {
         return api.getCompanyNews(symbol,dateFrom, dateTo).map { it.convert() }
     }
+
+     override suspend fun getGeneralInfoBySymbol(symbol: String): CompanyGeneral {
+        return api.getCompanyGeneralInfoBySymbol(symbol).convert()
+    }
+
 }

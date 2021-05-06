@@ -14,8 +14,13 @@ fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String 
     return formatter.format(this)
 }
 
-fun Date.plusOneWeek(format: String, locale: Locale = Locale.getDefault()): String {
-    val formatter = SimpleDateFormat(format, locale)
+fun Date.minusOneWeek(): Date {
     this.time -= 604800000
-    return formatter.format(this)
+    return this
 }
+
+    fun fromStringToDate(date:String,format: String, locale: Locale = Locale.getDefault()):Date{
+        val date = SimpleDateFormat(format,locale).parse(date)
+        return Date(date.time)
+    }
+

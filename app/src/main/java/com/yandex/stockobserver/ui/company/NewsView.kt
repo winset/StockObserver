@@ -6,8 +6,10 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +26,7 @@ class NewsView @JvmOverloads constructor(
     context, attrs, defAttributeSet
 ) {
     private val TAG: String = "NewsView"
-    private var binding:NewsViewBinding =
+    private var binding: NewsViewBinding =
         NewsViewBinding.inflate(LayoutInflater.from(context), this)
     private val newsAdapter = NewsAdapter(::onItemClick)
     private lateinit var viewModel: CompanyViewModel
@@ -36,46 +38,27 @@ class NewsView @JvmOverloads constructor(
         navController.navigate(directions)
     }
 
-     fun createView(viewModel: CompanyViewModel,navController: NavController) {
-         this.viewModel = viewModel
-         this.navController = navController
-         initRecycler()
+    fun createView(viewModel: CompanyViewModel, navController: NavController) {
+        this.viewModel = viewModel
+        this.navController = navController
+        initRecycler()
     }
 
-    private fun initRecycler(){
+    private fun initRecycler() {
         binding.newsRv.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            addOnScrollListener(recyclerScrollListener())
         }
     }
 
-    fun addDataToRecycler(news: List<CompanyNewsItem>){
+    fun addDataToRecycler(news: List<CompanyNewsItem>) {
         newsAdapter.updateData(newsList = news)
     }
 
-    private fun recyclerScrollListener(): RecyclerView.OnScrollListener {
-        var pastVisiblesItems: Int
-        var visibleItemCount: Int
-        var totalItemCount: Int
-        val scrollListener = object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) {
-                    visibleItemCount = recyclerView.layoutManager?.childCount!!
-                    totalItemCount = recyclerView.layoutManager?.itemCount!!
-                    pastVisiblesItems =
-                        (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                    if (::viewModel.isInitialized){
-                        viewModel.loadMoreNews(
-                            pastVisiblesItems,
-                            visibleItemCount,
-                            totalItemCount
-                        )
-                    }
-                }
-            }
-        }
-        return scrollListener
+    fun showNoNewsMsg() {
+        Log.d(TAG, "showNoNewsMsg: ")
+        binding.newsRv.visibility = View.GONE
+        binding.textView.visibility = View.VISIBLE
     }
+
 }

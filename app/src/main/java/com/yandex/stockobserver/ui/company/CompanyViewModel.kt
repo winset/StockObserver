@@ -8,7 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yandex.stockobserver.genralInfo.*
 import com.yandex.stockobserver.repository.CompanyRepository
-import com.yandex.stockobserver.utils.plusOneWeek
+import com.yandex.stockobserver.utils.fromStringToDate
+import com.yandex.stockobserver.utils.minusOneWeek
 import com.yandex.stockobserver.utils.toString
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -29,8 +30,17 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
 
     private val _news = MutableLiveData<List<CompanyNewsItem>>()
     val news: LiveData<List<CompanyNewsItem>> = _news
-    private val newNews = mutableListOf<List<CompanyNewsItem>>()
+    private val newNews = mutableListOf<CompanyNewsItem>()
+    private val _haveNews = MutableLiveData<Boolean>()
+    val haveNews: LiveData<Boolean> = _haveNews
+    private var newsDateTo: String = ""
+    private var newsDateFrom: String = ""
 
+    private val _summary = MutableLiveData<CompanyGeneral>()
+    val summary: LiveData<CompanyGeneral> = _summary
+
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
 
     private lateinit var generalInfo: CompanyInfo
 
@@ -42,7 +52,8 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
     private fun init() {
         initIsFavorite(generalInfo.isFavorite)
         getStockCandle(generalInfo.symbol)
-        getNews(generalInfo.symbol, "", "")
+        getNews(generalInfo.symbol, newsDateFrom, newsDateTo)
+        getSummaryInfo(generalInfo.symbol)
     }
 
     private fun getStockCandle(symbol: String) {
@@ -77,46 +88,42 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
         _isMainFragmentNeedUpdate.value = isNeed
     }
 
-    private fun getSummaryInfo() {
-    }
-
-    fun loadMoreNews(
-        pastVisiblesItems: Int,
-        visibleItemCount: Int,
-        totalItemCount: Int
-    ) {
-        val loadIndent = 5
-        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - loadIndent) {
-
+    private fun getSummaryInfo(symbol: String) {
+        viewModelScope.launch {
+            _summary.value = companyRepository.getGeneralInfoBySymbol(symbol)
         }
     }
 
     private fun getNews(symbol: String, dateFrom: String, dateTo: String) {
         var dateTo = dateTo
         var dateFrom = dateFrom
-
+        val format = "yyyy-MM-dd"
         if (dateTo.isEmpty() && dateFrom.isEmpty()) {
-            val format = "yyyy-MM-dd"
             val current = Date().toString(format)
-            val inAWeek = Date().plusOneWeek(format)
+            val inAWeek = Date().minusOneWeek()
             dateTo = current
-            dateFrom = inAWeek
-            Log.d("CompanyFragment", "getNews: $current $inAWeek")
+            dateFrom = inAWeek.toString(format)
         }
 
         viewModelScope.launch {
-            _news.value = companyRepository.getNews(symbol, dateFrom, dateTo)
+            try {
+                var news = companyRepository.getNews(symbol, dateFrom, dateTo)
+                if (news.isNotEmpty()) {
+                    newNews.addAll(news)
+                    _news.value = newNews
+                } else {
+                    val newDateFrom =
+                        fromStringToDate(dateFrom, format).minusOneWeek().toString(format)
+                    news = companyRepository.getNews(symbol, newDateFrom, dateTo)
+                }
+                if (news.isEmpty())
+                    _haveNews.value = false
+                else
+                    _haveNews.value = true
+
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
         }
     }
-
-    private suspend fun getExecutive(): CompanyExecutive {
-        val executive =
-            viewModelScope.async { companyRepository.getExecutive(generalInfo.symbol) }
-        return e(executive.await())
-    }
-
-    private fun e(executive: CompanyExecutive): CompanyExecutive {
-        return executive
-    }
-
 }

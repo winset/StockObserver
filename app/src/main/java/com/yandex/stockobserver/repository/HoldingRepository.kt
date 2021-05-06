@@ -14,6 +14,7 @@ interface HoldingRepository {
     fun getPopularHint(holdingsList: ETFHoldings): List<Hint>
     suspend fun getLookingHint():List<Hint>
     suspend fun addNewHint(symbol: String)
+    suspend fun isHintInDB(symbol: String): Boolean
     suspend fun getSimilar(symbol: String): SearchSimilar
     suspend fun getHolding(page: Int): ETFHoldings
 }

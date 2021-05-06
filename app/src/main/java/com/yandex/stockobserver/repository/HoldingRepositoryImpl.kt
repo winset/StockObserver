@@ -84,6 +84,9 @@ class HoldingRepositoryImpl @Inject constructor(
         storage.addHint(Hint(symbol))
     }
 
+    override suspend fun isHintInDB(symbol: String): Boolean {
+        return storage.isHintInDb(symbol)
+    }
 
     private suspend fun getCompanyInfo(
         holdingsList: ETFHoldings,

@@ -66,18 +66,21 @@
                         android:orientation="horizontal" />
 
                     <TextView
+                        android:id="@+id/looking_for_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/search_looking_for"
                         android:textColor="@color/black_text"
                         android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:visibility="gone"/>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/looking_for_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal" />
+                        android:orientation="horizontal"
+                        android:visibility="gone"/>
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>

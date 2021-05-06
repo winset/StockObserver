@@ -33,6 +33,8 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
     private val _lookingHint = MutableLiveData<List<Hint>>()
     val lookingHint: LiveData<List<Hint>> = _lookingHint
     private val newHint = mutableListOf<Hint>()
+    private val _isHaveUserHint = MutableLiveData<Boolean>()
+    val isHaveUserHint:LiveData<Boolean> = _isHaveUserHint
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
@@ -124,14 +126,19 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
             _popularHint.value = holdingRepository.getPopularHint(holdingsList)
             newHint.addAll(holdingRepository.getLookingHint())
             _lookingHint.value = newHint
+            if (newHint.isNotEmpty())
+               _isHaveUserHint.value = true
         }
     }
 
-    fun addLookingForHint(symbol: String) {
+    private fun addLookingForHint(symbol: String) {
         viewModelScope.launch {
-            newHint.add(Hint(symbol))
-            _lookingHint.value = newHint
-            holdingRepository.addNewHint(symbol)
+            if (!holdingRepository.isHintInDB(symbol)){
+                Log.d("TAG", "addLookingForHint: ")
+                newHint.add(Hint(symbol))
+                _lookingHint.value = newHint
+                holdingRepository.addNewHint(symbol)
+            }
         }
     }
 
@@ -140,6 +147,7 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
     }
 
     fun search(symbol: String) {
+        addLookingForHint(symbol)
         var symbol = symbol.filter { !it.isWhitespace() }
         if (symbol.length > 10) {
             symbol = symbol.substring(0, 9)
