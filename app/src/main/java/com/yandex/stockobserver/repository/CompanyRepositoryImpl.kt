@@ -33,4 +33,7 @@ class CompanyRepositoryImpl@Inject constructor(
         return api.getCompanyGeneralInfoBySymbol(symbol).convert()
     }
 
+    override suspend fun getCurrentPrice(symbol: String): Double {
+        TODO("Not yet implemented")
+    }
 }

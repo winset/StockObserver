@@ -49,7 +49,27 @@ class HoldingRepositoryImpl @Inject constructor(
 
     override fun getFavorites(): Flow<List<CompanyInfo>> {
         return flow {
-            emit(storage.getAllFavorite().map { it.convert() })
+            val favorite = storage.getAllFavorite().map { it.convert() }
+            val result = mutableListOf<CompanyInfo>()
+            favorite.forEach {
+                val quote = getQuote(it.symbol)
+                    val context = MathContext(5, RoundingMode.HALF_UP)
+                    val openPrice = BigDecimal(quote.prevClosePrice, context).toDouble()
+                    val currentPrice = BigDecimal(quote.currentPrice, context).toDouble()
+                    val margin = currentPrice - openPrice
+                    val result1 = BigDecimal(margin, context)
+                    result.add(
+                        CompanyInfo(
+                            it.symbol,
+                            it.cusip,
+                            it.name,
+                            it.logo,
+                            quote.currentPrice,
+                            result1.toDouble(),
+                            it.isFavorite)
+                    )
+            }
+            emit(result)
         }.flowOn(Dispatchers.IO)
     }
 

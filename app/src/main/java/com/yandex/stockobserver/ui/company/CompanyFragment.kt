@@ -103,11 +103,9 @@ class CompanyFragment : Fragment() {
 
     private fun backButton() {
         binding.backBtnFg.setOnClickListener {
-            Log.d("CompanyFragment", "backButton: ")
             navigateToMain()
         }
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            Log.d("CompanyFragment", "backButton11: ")
             navigateToMain()
         }
     }
@@ -132,22 +130,21 @@ class CompanyFragment : Fragment() {
     }
 
     private fun initNews(newsView: NewsView) {
-        newsView.createView(viewModel,navController)
+        newsView.createView(viewModel, navController)
         viewModel.news.observe(viewLifecycleOwner, Observer {
             newsView.addDataToRecycler(it)
         })
         viewModel.haveNews.observe(viewLifecycleOwner, Observer {
-            if (it==false){
+            if (it == false) {
                 newsView.showNoNewsMsg()
             }
         })
     }
 
-    private fun initSummary(summaryView: SummaryView){
+    private fun initSummary(summaryView: SummaryView) {
         viewModel.summary.observe(viewLifecycleOwner, Observer {
-                summaryView.createView()
+            summaryView.createView(it)
         })
     }
-
 
 }

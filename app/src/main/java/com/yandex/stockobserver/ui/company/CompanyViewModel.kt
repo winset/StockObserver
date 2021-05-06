@@ -67,11 +67,9 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
             _isFavorite.value = !_isFavorite.value!!
             viewModelScope.launch {
                 if (_isFavorite.value == true) {
-                    Log.d("MainFragment", "onFavoriteClick: ")
                     generalInfo.isFavorite = _isFavorite.value!!
                     companyRepository.addFavorite(generalInfo)
                 } else {
-                    Log.d("MainFragment", "onFavoriteClick: -----")
                     companyRepository.deleteFavorite(generalInfo.symbol)
                 }
             }
@@ -104,14 +102,13 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
             dateTo = current
             dateFrom = inAWeek.toString(format)
         }
-
         viewModelScope.launch {
             try {
                 var news = companyRepository.getNews(symbol, dateFrom, dateTo)
                 if (news.isNotEmpty()) {
                     newNews.addAll(news)
                     _news.value = newNews
-                } else {
+                }else {
                     val newDateFrom =
                         fromStringToDate(dateFrom, format).minusOneWeek().toString(format)
                     news = companyRepository.getNews(symbol, newDateFrom, dateTo)
@@ -120,7 +117,6 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
                     _haveNews.value = false
                 else
                     _haveNews.value = true
-
             } catch (e: Exception) {
                 _error.value = e.message
             }

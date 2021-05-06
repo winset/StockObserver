@@ -12,4 +12,5 @@ interface CompanyRepository {
         dateFrom: String,
         dateTo: String
     ): List<CompanyNewsItem>
+    suspend fun getCurrentPrice(symbol: String):Double
 }

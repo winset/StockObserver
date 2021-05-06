@@ -19,4 +19,12 @@
     <string name="no_news_for_the_last_month">No news for the last two week</string>
     <string name="click_to_read_full">Click to read full</string>
     <string name="click_to_hide">Click to hide</string>
+    <string name="currency">Currency:</string>
+    <string name="country">Country:</string>
+    <string name="exchange">Exchange:</string>
+    <string name="market_capitalization">Market capitalization:</string>
+    <string name="ipo">IPO:</string>
+    <string name="share_outstanding">Share outstanding:</string>
+    <string name="finnhub_industry">Finnhub Industry:</string>
+    <string name="url">URL:</string>
 </resources>

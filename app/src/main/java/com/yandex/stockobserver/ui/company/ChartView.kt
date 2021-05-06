@@ -27,4 +27,9 @@ class ChartView @JvmOverloads constructor(
         binding.chart.setData(stockCandle)
     }
 
+    fun updateQuoteTicker(price:String,margin:String){
+        binding.currentPrice.text = price
+        binding.currentMargin.text = margin
+    }
+
 }
