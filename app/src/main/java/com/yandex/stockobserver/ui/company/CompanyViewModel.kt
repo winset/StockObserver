@@ -39,6 +39,12 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
     private val _summary = MutableLiveData<CompanyGeneral>()
     val summary: LiveData<CompanyGeneral> = _summary
 
+    private val _currentPrice = MutableLiveData<Double>()
+    val currentPrice:LiveData<Double> = _currentPrice
+
+    private val _margin = MutableLiveData<String>()
+    val margin:LiveData<String> = _margin
+
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
@@ -60,6 +66,10 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
         viewModelScope.launch {
             _stockCandle.value = companyRepository.getStockCandle(symbol)
         }
+    }
+
+    private fun getCurrentPrice(){
+
     }
 
     fun onFavoriteClick() {

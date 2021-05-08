@@ -19,8 +19,10 @@ class CompanyInfoEntity(
     val logo: String,
     @ColumnInfo(name = "price")
     val price: Double,
+    @ColumnInfo(name = "prevClosePrice")
+    val prevClosePrice:Double,
     @ColumnInfo(name = "margin")
-    val margin: Double,
+    val margin: String,
     @ColumnInfo(name = "isFavorite")
     val isFavorite: Boolean,
 
@@ -31,6 +33,7 @@ class CompanyInfoEntity(
         name = companyInfo.name,
         logo = companyInfo.logo,
         price = companyInfo.price,
+        prevClosePrice = companyInfo.prevClosePrice,
         margin = companyInfo.margin,
         isFavorite = companyInfo.isFavorite
     )
@@ -43,6 +46,7 @@ class CompanyInfoEntity(
             name = name,
             logo = logo,
             price = price,
+            prevClosePrice = prevClosePrice,
             margin = margin,
             isFavorite = isFavorite
         )

@@ -1,9 +1,11 @@
 package com.yandex.stockobserver.api
 
 import android.util.Log
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.yandex.stockobserver.BuildConfig
 import com.yandex.stockobserver.genralInfo.ETFHoldings
+import com.yandex.stockobserver.genralInfo.QuoteTicker
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
@@ -14,20 +16,20 @@ class QuoteWebsocket {
     lateinit var webSocketClient: WebSocketClient
 
 
-     fun initWebSocket(holdingsList: ETFHoldings) {
+    fun initWebSocket(symbol: String) {
         val url = BuildConfig.WEB_SOKET_URL
         val coinbaseUri = URI(url)
-        createWebSocketClient(coinbaseUri, holdingsList)
+        createWebSocketClient(coinbaseUri, symbol)
         val socketFactory: SSLSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
         webSocketClient.setSocketFactory(socketFactory)
         webSocketClient.connect()
     }
 
-    private fun createWebSocketClient(coinbaseUri: URI?, holdingsList: ETFHoldings) {
+    private fun createWebSocketClient(coinbaseUri: URI?, symbol: String) {
         webSocketClient = object : WebSocketClient(coinbaseUri) {
             override fun onOpen(handshakedata: ServerHandshake?) {
                 Log.d("WEB", "onOpen: ")
-                subscribe(holdingsList)
+                subscribe(symbol)
             }
 
             override fun onMessage(message: String?) {
@@ -36,7 +38,7 @@ class QuoteWebsocket {
             }
 
             override fun onClose(code: Int, reason: String?, remote: Boolean) {
-                unsubscribe(holdingsList)
+                unsubscribe(symbol)
             }
 
             override fun onError(ex: java.lang.Exception?) {
@@ -50,31 +52,27 @@ class QuoteWebsocket {
     private fun setUpQuotes(message: String?) {
         message?.let {
             val moshi = Moshi.Builder().build()
+            val adapter: JsonAdapter<QuoteTicker> = moshi.adapter(QuoteTicker::class.java)
+            val quoteTicker = adapter.fromJson(message)
             Log.d("WEB", "setUpQuotes: " + message)
         }
     }
 
-    private fun subscribe(holdingsList: ETFHoldings) {
+    private fun subscribe(symbol: String) {
         val jObjectType = JSONObject()
         jObjectType.put("type", "subscribe")
-
-        holdingsList.holdings.forEach {
-            jObjectType.put("symbol", it.symbol)
-            webSocketClient.send(
-                jObjectType.toString()
-            )
-        }
+        jObjectType.put("symbol", symbol)
+        webSocketClient.send(
+            jObjectType.toString()
+        )
         Log.d("WEB", "subscribe: " + jObjectType.toString())
 
     }
 
-    private fun unsubscribe(holdingsList: ETFHoldings) {
+    private fun unsubscribe(symbol: String) {
         val jObjectType = JSONObject()
         jObjectType.put("type", "unsubscribe")
-
-        holdingsList.holdings.forEach {
-            jObjectType.put("symbol", it.symbol)
-        }
+        jObjectType.put("symbol", symbol)
     }
 
 }

@@ -11,14 +11,17 @@
         android:label="main_fragment"
         tools:layout="@layout/main_fragment">
         <argument
+            android:name="isNeedToUpdate"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
             android:name="symbol"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue=""/>
         <argument
             android:name="isFavorite"
-            app:argType="boolean" />
-        <argument
-            android:name="isNeedToUpdate"
-            app:argType="boolean" />
+            app:argType="boolean"
+            android:defaultValue="false"/>
         <action
             android:id="@+id/action_mainFragment_to_companyFragment"
             app:destination="@id/companyFragment"
@@ -42,16 +45,15 @@
             app:destination="@id/mainFragment"
             app:launchSingleTop="true">
             <argument
+                android:name="isNeedToUpdate"
+                app:argType="boolean"
+                android:defaultValue="false" />
+            <argument
                 android:name="symbol"
                 app:argType="string" />
             <argument
                 android:name="isFavorite"
                 app:argType="boolean" />
-            <argument
-                android:name="isNeedToUpdate"
-                app:argType="boolean"
-                android:defaultValue="false" />
-
         </action>
         <action
             android:id="@+id/action_companyFragment_to_webViewFragment"

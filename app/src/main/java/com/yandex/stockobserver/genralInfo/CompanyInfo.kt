@@ -10,6 +10,7 @@ class CompanyInfo(
     val name: String,
     val logo: String,
     val price:Double,
-    val margin:Double,
+    val prevClosePrice:Double,
+    val margin:String,
     var isFavorite:Boolean = false
 ) : Parcelable

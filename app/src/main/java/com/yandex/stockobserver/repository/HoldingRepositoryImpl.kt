@@ -6,6 +6,7 @@ import com.yandex.stockobserver.api.QuoteWebsocket
 import com.yandex.stockobserver.db.Storage
 import com.yandex.stockobserver.genralInfo.*
 import com.yandex.stockobserver.genralInfo.entitys.CompanyInfoEntity
+import com.yandex.stockobserver.utils.marginToString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -53,11 +54,7 @@ class HoldingRepositoryImpl @Inject constructor(
             val result = mutableListOf<CompanyInfo>()
             favorite.forEach {
                 val quote = getQuote(it.symbol)
-                    val context = MathContext(5, RoundingMode.HALF_UP)
-                    val openPrice = BigDecimal(quote.prevClosePrice, context).toDouble()
-                    val currentPrice = BigDecimal(quote.currentPrice, context).toDouble()
-                    val margin = currentPrice - openPrice
-                    val result1 = BigDecimal(margin, context)
+                    val margin  = marginToString(quote.currentPrice,quote.prevClosePrice)
                     result.add(
                         CompanyInfo(
                             it.symbol,
@@ -65,7 +62,8 @@ class HoldingRepositoryImpl @Inject constructor(
                             it.name,
                             it.logo,
                             quote.currentPrice,
-                            result1.toDouble(),
+                            quote.prevClosePrice,
+                            margin,
                             it.isFavorite)
                     )
             }
@@ -92,14 +90,6 @@ class HoldingRepositoryImpl @Inject constructor(
 
     override suspend fun getLookingHint(): List<Hint> = storage.getAllHints()
 
-    suspend fun initQuoteSocket(holdingsList: ETFHoldings) {
-        quoteWebsocket.initWebSocket(holdingsList)
-    }
-
-    suspend fun closeQuoteWebSocket() {
-        quoteWebsocket.webSocketClient.close()
-    }
-
     override suspend fun addNewHint(symbol: String) {
         storage.addHint(Hint(symbol))
     }
@@ -121,12 +111,7 @@ class HoldingRepositoryImpl @Inject constructor(
         subList.forEachIndexed { index, holdingsItem ->
             companyInfo.add(getGeneralInfoBySymbol(holdingsItem.symbol))
             quotes.add(getQuote(holdingsItem.symbol))
-
-            val context = MathContext(5, RoundingMode.HALF_UP)
-            val openPrice = BigDecimal(quotes[index].prevClosePrice, context).toDouble()
-            val currentPrice = BigDecimal(quotes[index].currentPrice, context).toDouble()
-            val margin = currentPrice - openPrice
-            val result1 = BigDecimal(margin, context)
+            val margin = marginToString(quotes[index].currentPrice,quotes[index].prevClosePrice)
             result.add(
                 CompanyInfo(
                     holdingsItem.symbol,
@@ -134,7 +119,8 @@ class HoldingRepositoryImpl @Inject constructor(
                     companyInfo[index].name,
                     companyInfo[index].logo,
                     quotes[index].currentPrice,
-                    result1.toDouble(),
+                    quotes[index].prevClosePrice,
+                    margin,
                     isFavorite(holdingsItem.symbol)
                 )
             )

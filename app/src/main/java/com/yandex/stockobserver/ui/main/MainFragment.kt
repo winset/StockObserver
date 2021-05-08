@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -40,7 +41,7 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel: MainViewModel by lazy { injectViewModel(viewModelFactory) }
+    private val viewModel: MainViewModel by navGraphViewModels (R.id.nav_graph) {viewModelFactory} //lazy { injectViewModel(viewModelFactory) }
     private val stocksAdapter = StockAdapter(::onItemClick, ::onFavoriteClick)
     private val favouriteAdapter = StockAdapter(::onItemClick, ::onFavoriteClick)
     private val searchAdapter = StockAdapter(::onItemClick, ::onFavoriteClick)
@@ -55,6 +56,7 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+       // viewModel = injectViewModel(viewModelFactory)
         StockApplication.stockComponent.inject(this)
         binding = MainFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -73,9 +75,18 @@ class MainFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (args.isNeedToUpdate){
+      //  outState.putBundle("nav_state", findNavController().saveState())
+       /* if (args.isNeedToUpdate){
+            Log.d("123", "onSaveInstanceState: ")
             viewModel.updateFavoriteInVooList(args.symbol, args.isFavorite)
             viewModel.getFavorites()
+        }*/
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (savedInstanceState != null) {
+          //  findNavController().restoreState(savedInstanceState.getBundle("nav_state"))
         }
     }
 
@@ -280,6 +291,7 @@ class MainFragment : Fragment() {
     private fun onItemClick(companyInfo: CompanyInfo) {
         viewModel.onItemClick(companyInfo.symbol)
         val directions = MainFragmentDirections.actionMainFragmentToCompanyFragment(companyInfo)
+        activity?.supportFragmentManager?.beginTransaction()?.addToBackStack(null)
         findNavController().navigate(directions)
 
     }
@@ -324,7 +336,13 @@ class MainFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        Log.d("AAAA123", "onDestroyView: ")
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        Log.d("AAAA123", "onDestroy: ")
+        super.onDestroy()
     }
 
     companion object {

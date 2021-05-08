@@ -55,14 +55,12 @@ class StockHolder(
             onFavoriteClick(item, adapterPosition, favorite.isSelected, adapterHashCode)
         }
 
-        if (item.margin > 0) {
+        if ((Math.round((item.price - item.prevClosePrice)*100).toDouble()/100) > 0) {
             delta.setTextColor(itemView.resources.getColor(R.color.green_text))
-            delta.text = "+" + item.margin
         } else {
             delta.setTextColor(itemView.resources.getColor(R.color.red_text))
-            delta.text = item.margin.toString()
         }
-
+        delta.text = item.margin
 
         if (item.logo.isNotEmpty()) {
             Picasso.get()

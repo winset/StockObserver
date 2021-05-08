@@ -36,4 +36,13 @@ class CompanyRepositoryImpl@Inject constructor(
     override suspend fun getCurrentPrice(symbol: String): Double {
         TODO("Not yet implemented")
     }
+
+    suspend fun initQuoteSocket(symbol: String) {
+        quoteWebsocket.initWebSocket(symbol)
+    }
+
+    suspend fun closeQuoteWebSocket() {
+        quoteWebsocket.webSocketClient.close()
+    }
+
 }

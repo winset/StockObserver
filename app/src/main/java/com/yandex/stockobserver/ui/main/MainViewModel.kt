@@ -51,6 +51,7 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
     private var loadMoreSimilar = true
 
     init {
+        Log.d("AAAA123", "onDestroy11: ")
         viewModelScope.launch {
             getHoldingsList()
             if (::holdingsList.isInitialized) {
