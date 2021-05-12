@@ -9,12 +9,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.yandex.stockobserver.R
-import com.yandex.stockobserver.genralInfo.CompanyInfo
+import com.yandex.stockobserver.model.CompanyInfo
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 
 class StockHolder(
     view: View,
-    private val onItemClick: (String) -> Unit,
+    private val onItemClick: (CompanyInfo) -> Unit,
     private val onFavoriteClick: (CompanyInfo, Int, Boolean, Int) -> Unit,
     private val adapterHashCode: Int
 ) : RecyclerView.ViewHolder(view) {
@@ -29,12 +29,12 @@ class StockHolder(
     companion object {
         fun create(
             parent: ViewGroup,
-            onItemClick: (String) -> Unit,
+            onItemClick: (CompanyInfo) -> Unit,
             onFavoriteClick: (CompanyInfo, Int, Boolean, Int) -> Unit,
             adapterHashCode: Int
         ): StockHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.top_watched_item, parent, false)
+                .inflate(R.layout.stock_item, parent, false)
             return StockHolder(view, onItemClick, onFavoriteClick, adapterHashCode)
         }
     }
@@ -45,7 +45,7 @@ class StockHolder(
         price.text = "$" + item.price
 
         itemView.setOnClickListener {
-            onItemClick(item.symbol)
+            onItemClick(item)
         }
 
         favorite.isSelected = item.isFavorite
@@ -55,14 +55,12 @@ class StockHolder(
             onFavoriteClick(item, adapterPosition, favorite.isSelected, adapterHashCode)
         }
 
-        if (item.margin > 0) {
+        if ((Math.round((item.price - item.prevClosePrice)*100).toDouble()/100) > 0) {
             delta.setTextColor(itemView.resources.getColor(R.color.green_text))
-            delta.text = "+" + item.margin
         } else {
             delta.setTextColor(itemView.resources.getColor(R.color.red_text))
-            delta.text = item.margin.toString()
         }
-
+        delta.text = item.margin
 
         if (item.logo.isNotEmpty()) {
             Picasso.get()
@@ -95,6 +93,5 @@ class StockHolder(
         } else {
             layout.background = itemView.resources.getDrawable(R.drawable.rounded_background)
         }
-
     }
 }

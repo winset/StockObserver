@@ -1,16 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    tools:parentTag="android.widget.RelativeLayout">
+
+    <ImageView
+        android:id="@+id/company_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        tools:src="@drawable/aple" />
+    <TextView
+        android:id="@+id/country_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/company_logo"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/country" />
+    <TextView
+        android:id="@+id/country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/country_text"
+        android:layout_alignBottom="@id/country_text"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black_text"
+        tools:text="US"/>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/currency_text"
         android:layout_width="wrap_content"
-        android:layout_height="19dp"
-        android:text="SummaryView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/country_text"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/currency" />
+
+    <TextView
+        android:id="@+id/currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/currency_text"
+        android:layout_alignBottom="@id/currency_text"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black_text"
+        tools:text="USD"/>
+    <TextView
+        android:id="@+id/exchange_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/currency_text"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/exchange" />
+
+    <TextView
+        android:id="@+id/exchange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/exchange_text"
+        android:layout_alignBottom="@id/exchange_text"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black_text"
+        tools:text="NASDAQ/NMS (GLOBAL MARKET)"/>
+
+    <TextView
+        android:id="@+id/finnhubIndustry_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/exchange_text"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/finnhub_industry" />
+
+    <TextView
+        android:id="@+id/finnhubIndustry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/finnhubIndustry_text"
+        android:layout_alignBottom="@id/finnhubIndustry_text"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black_text"
+        tools:text="Technology"/>
+
+    <TextView
+        android:id="@+id/ipo_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/finnhubIndustry_text"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/ipo" />
+
+    <TextView
+        android:id="@+id/ipo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/ipo_text"
+        android:layout_alignBottom="@id/ipo_text"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black_text"
+        tools:text="1980-12-12"/>
+    <TextView
+        android:id="@+id/marketCapitalization_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ipo_text"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/market_capitalization" />
+
+    <TextView
+        android:id="@+id/marketCapitalization"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/marketCapitalization_text"
+        android:layout_alignBottom="@id/marketCapitalization_text"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black_text"
+        tools:text="1415993"/>
+    <TextView
+        android:id="@+id/shareOutstanding_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/marketCapitalization_text"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/share_outstanding" />
+
+    <TextView
+        android:id="@+id/shareOutstanding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/shareOutstanding_text"
+        android:layout_alignBottom="@id/shareOutstanding_text"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black_text"
+        tools:text="4375.47998046875"/>
+
+    <TextView
+        android:id="@+id/weburl_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/shareOutstanding_text"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/url" />
+
+    <TextView
+        android:id="@+id/weburl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/weburl_text"
+        android:layout_alignBottom="@id/weburl_text"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black_text"
+        tools:text="4375.47998046875"/>
+
+
+</merge>

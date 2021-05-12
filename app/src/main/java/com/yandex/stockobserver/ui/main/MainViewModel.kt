@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yandex.stockobserver.genralInfo.*
+import com.yandex.stockobserver.model.*
 import com.yandex.stockobserver.repository.HoldingRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -33,6 +33,13 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
     private val _lookingHint = MutableLiveData<List<Hint>>()
     val lookingHint: LiveData<List<Hint>> = _lookingHint
     private val newHint = mutableListOf<Hint>()
+    private val _isHaveUserHint = MutableLiveData<Boolean>()
+    val isHaveUserHint:LiveData<Boolean> = _isHaveUserHint
+
+    private val _currentPrice = MutableLiveData<String>()
+    val currentPrice: LiveData<String> = _currentPrice
+    private val _currentMargin = MutableLiveData<String>()
+    val currentMargin: LiveData<String> = _currentMargin
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
@@ -101,11 +108,21 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
         }
     }
 
-    private fun getFavorites() {
+     fun getFavorites() {
         viewModelScope.launch {
             holdingRepository.getFavorites().collect {
                 _favouriteCompanies.value = it
             }
+        }
+    }
+
+    fun updateFavoriteInVooList(symbol:String,isFavorite: Boolean){
+        viewModelScope.launch {
+            newVooComp.forEach {
+                if (it.symbol == symbol)
+                    it.isFavorite = isFavorite
+            }
+            _vooCompanies.value = newVooComp
         }
     }
 
@@ -114,14 +131,19 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
             _popularHint.value = holdingRepository.getPopularHint(holdingsList)
             newHint.addAll(holdingRepository.getLookingHint())
             _lookingHint.value = newHint
+            if (newHint.isNotEmpty())
+               _isHaveUserHint.value = true
         }
     }
 
-    fun addLookingForHint(symbol: String) {
+    private fun addLookingForHint(symbol: String) {
         viewModelScope.launch {
-            newHint.add(Hint(symbol))
-            _lookingHint.value = newHint
-            holdingRepository.addNewHint(symbol)
+            if (!holdingRepository.isHintInDB(symbol)){
+                Log.d("TAG", "addLookingForHint: ")
+                newHint.add(Hint(symbol))
+                _lookingHint.value = newHint
+                holdingRepository.addNewHint(symbol)
+            }
         }
     }
 
@@ -130,6 +152,7 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
     }
 
     fun search(symbol: String) {
+        addLookingForHint(symbol)
         var symbol = symbol.filter { !it.isWhitespace() }
         if (symbol.length > 10) {
             symbol = symbol.substring(0, 9)
@@ -147,7 +170,7 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
             val holdingsItems = mutableListOf<HoldingsItem>()
             searchSimilar.result.forEach {
                 holdingsItems.add(
-                    HoldingsItem(it.symbol, "", "", 0f, 0.0, 0f, "")
+                    HoldingsItem(it.displaySymbol, "", "", 0f, 0.0, 0f, "")
                 )
             }
             val holdingsList = ETFHoldings("", "", holdingsItems, searchSimilar.count)

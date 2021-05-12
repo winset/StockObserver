@@ -1,7 +1,7 @@
-package com.yandex.stockobserver.genralInfo.dto
+package com.yandex.stockobserver.model.dto
 
 import com.google.gson.annotations.SerializedName
-import com.yandex.stockobserver.genralInfo.Quote
+import com.yandex.stockobserver.model.Quote
 
 data class QuoteDto(
     @field:SerializedName("c")

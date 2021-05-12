@@ -1,7 +1,7 @@
 package com.yandex.stockobserver.ui.adapter
 
 import androidx.recyclerview.widget.DiffUtil
-import com.yandex.stockobserver.genralInfo.Hint
+import com.yandex.stockobserver.model.Hint
 
 class HintDiffUtilCallback(
     private val oldHints: List<Hint>,

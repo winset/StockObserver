@@ -1,7 +1,7 @@
 package com.yandex.stockobserver.ui.adapter
 
 import androidx.recyclerview.widget.DiffUtil
-import com.yandex.stockobserver.genralInfo.CompanyInfo
+import com.yandex.stockobserver.model.CompanyInfo
 
 class CompanyDiffUtilCallback(
     private val oldCompanies: List<CompanyInfo>,

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yandex.stockobserver.R
-import com.yandex.stockobserver.genralInfo.Hint
+import com.yandex.stockobserver.model.Hint
 
 class HintHolder(view: View,
                  private val onHintClick:(String)->Unit) : RecyclerView.ViewHolder(view) {

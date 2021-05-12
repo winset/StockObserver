@@ -3,9 +3,9 @@ package com.yandex.stockobserver.ui.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.yandex.stockobserver.genralInfo.CompanyInfo
+import com.yandex.stockobserver.model.CompanyInfo
 
-class StockAdapter(private val onItemClick: (String) -> Unit, private val onFavoriteClick: (CompanyInfo, Int, Boolean, Int) -> Unit) :
+class StockAdapter(private val onItemClick: (CompanyInfo) -> Unit, private val onFavoriteClick: (CompanyInfo, Int, Boolean, Int) -> Unit) :
     RecyclerView.Adapter<StockHolder>() {
 
     private var topList = mutableListOf<CompanyInfo>()

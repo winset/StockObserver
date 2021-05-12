@@ -1,23 +1,16 @@
 package com.yandex.stockobserver.repository
 
-import android.util.Log
 import com.yandex.stockobserver.api.FinhubApi
 import com.yandex.stockobserver.api.QuoteWebsocket
 import com.yandex.stockobserver.db.Storage
-import com.yandex.stockobserver.genralInfo.*
-import com.yandex.stockobserver.genralInfo.entitys.CompanyInfoEntity
-import kotlinx.coroutines.CoroutineScope
+import com.yandex.stockobserver.model.*
+import com.yandex.stockobserver.model.entitys.CompanyInfoEntity
+import com.yandex.stockobserver.utils.marginToString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 class HoldingRepositoryImpl @Inject constructor(
@@ -49,7 +42,26 @@ class HoldingRepositoryImpl @Inject constructor(
 
     override fun getFavorites(): Flow<List<CompanyInfo>> {
         return flow {
-            emit(storage.getAllFavorite().map { it.convert() })
+            val favorite = storage.getAllFavorite().map { it.convert() }
+            val result = mutableListOf<CompanyInfo>()
+            favorite.forEach {
+                val quote = getQuote(it.symbol)
+                val margin = marginToString(quote.currentPrice, quote.prevClosePrice)
+                val currentPrice = (Math.round(quote.currentPrice * 100).toDouble() / 100)
+                result.add(
+                    CompanyInfo(
+                        it.symbol,
+                        it.cusip,
+                        it.name,
+                        it.logo,
+                        currentPrice,
+                        quote.prevClosePrice,
+                        margin,
+                        it.isFavorite
+                    )
+                )
+            }
+            emit(result)
         }.flowOn(Dispatchers.IO)
     }
 
@@ -72,18 +84,13 @@ class HoldingRepositoryImpl @Inject constructor(
 
     override suspend fun getLookingHint(): List<Hint> = storage.getAllHints()
 
-    suspend fun initQuoteSocket(holdingsList: ETFHoldings) {
-        quoteWebsocket.initWebSocket(holdingsList)
-    }
-
-    suspend fun closeQuoteWebSocket() {
-        quoteWebsocket.webSocketClient.close()
-    }
-
     override suspend fun addNewHint(symbol: String) {
         storage.addHint(Hint(symbol))
     }
 
+    override suspend fun isHintInDB(symbol: String): Boolean {
+        return storage.isHintInDb(symbol)
+    }
 
     private suspend fun getCompanyInfo(
         holdingsList: ETFHoldings,
@@ -94,25 +101,21 @@ class HoldingRepositoryImpl @Inject constructor(
         val companyInfo = mutableListOf<CompanyGeneral>()
         val quotes = mutableListOf<Quote>()
         val subList = holdingsList.holdings.subList(firstIndex, lastIndex)
-        subList.forEach {
-            companyInfo.add(getGeneralInfoBySymbol(it.symbol))
-            quotes.add(getQuote(it.symbol))
-        }
 
         subList.forEachIndexed { index, holdingsItem ->
-            val context = MathContext(5, RoundingMode.HALF_UP)
-            val openPrice = BigDecimal(quotes[index].prevClosePrice, context).toDouble()
-            val currentPrice = BigDecimal(quotes[index].currentPrice, context).toDouble()
-            val margin = currentPrice - openPrice
-            val result1 = BigDecimal(margin, context)
+            companyInfo.add(getGeneralInfoBySymbol(holdingsItem.symbol))
+            quotes.add(getQuote(holdingsItem.symbol))
+            val margin = marginToString(quotes[index].currentPrice, quotes[index].prevClosePrice)
+            val currentPrice = (Math.round(quotes[index].currentPrice * 100).toDouble() / 100)
             result.add(
                 CompanyInfo(
                     holdingsItem.symbol,
                     holdingsItem.cusip,
                     companyInfo[index].name,
                     companyInfo[index].logo,
-                    quotes[index].currentPrice,
-                    result1.toDouble(),
+                    currentPrice,
+                    quotes[index].prevClosePrice,
+                    margin,
                     isFavorite(holdingsItem.symbol)
                 )
             )

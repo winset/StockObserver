@@ -1,7 +1,7 @@
-package com.yandex.stockobserver.genralInfo.dto
+package com.yandex.stockobserver.model.dto
 
 import com.google.gson.annotations.SerializedName
-import com.yandex.stockobserver.genralInfo.SimilarSymbol
+import com.yandex.stockobserver.model.SimilarSymbol
 
 data class SimilarSymbolDto(
 
