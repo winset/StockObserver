@@ -3,8 +3,7 @@ package com.yandex.stockobserver.ui.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.yandex.stockobserver.genralInfo.CompanyInfo
-import com.yandex.stockobserver.genralInfo.Hint
+import com.yandex.stockobserver.model.Hint
 
 class HintAdapter(private val onHintClick:(String)->Unit): RecyclerView.Adapter<HintHolder>() {
 

@@ -1,6 +1,7 @@
 package com.yandex.stockobserver.repository
 
-import com.yandex.stockobserver.genralInfo.*
+import com.yandex.stockobserver.api.QuoteWebsocket
+import com.yandex.stockobserver.model.*
 
 interface CompanyRepository {
     suspend fun getStockCandle(symbol: String): StockCandle
@@ -12,5 +13,7 @@ interface CompanyRepository {
         dateFrom: String,
         dateTo: String
     ): List<CompanyNewsItem>
-    suspend fun getCurrentPrice(symbol: String):Double
+     fun getCurrentPrice(symbol: String): QuoteWebsocket
+    suspend fun closeQuoteWebSocket()
+    suspend fun initQuoteSocket(symbol: String)
 }

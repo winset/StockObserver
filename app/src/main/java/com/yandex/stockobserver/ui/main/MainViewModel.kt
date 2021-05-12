@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yandex.stockobserver.genralInfo.*
+import com.yandex.stockobserver.model.*
 import com.yandex.stockobserver.repository.HoldingRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -36,6 +36,11 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
     private val _isHaveUserHint = MutableLiveData<Boolean>()
     val isHaveUserHint:LiveData<Boolean> = _isHaveUserHint
 
+    private val _currentPrice = MutableLiveData<String>()
+    val currentPrice: LiveData<String> = _currentPrice
+    private val _currentMargin = MutableLiveData<String>()
+    val currentMargin: LiveData<String> = _currentMargin
+
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
@@ -51,7 +56,6 @@ class MainViewModel @Inject constructor(private val holdingRepository: HoldingRe
     private var loadMoreSimilar = true
 
     init {
-        Log.d("AAAA123", "onDestroy11: ")
         viewModelScope.launch {
             getHoldingsList()
             if (::holdingsList.isInitialized) {

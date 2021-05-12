@@ -9,7 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.yandex.stockobserver.R
-import com.yandex.stockobserver.genralInfo.CompanyInfo
+import com.yandex.stockobserver.model.CompanyInfo
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 
 class StockHolder(

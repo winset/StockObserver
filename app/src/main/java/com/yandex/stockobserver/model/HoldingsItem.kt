@@ -1,6 +1,4 @@
-package com.yandex.stockobserver.genralInfo
-
-import com.google.gson.annotations.SerializedName
+package com.yandex.stockobserver.model
 
 data class HoldingsItem(
     val symbol: String,

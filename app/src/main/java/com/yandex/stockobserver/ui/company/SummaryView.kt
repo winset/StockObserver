@@ -3,12 +3,11 @@ package com.yandex.stockobserver.ui.company
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.squareup.picasso.Picasso
 import com.yandex.stockobserver.R
 import com.yandex.stockobserver.databinding.SummaryViewBinding
-import com.yandex.stockobserver.genralInfo.CompanyGeneral
+import com.yandex.stockobserver.model.CompanyGeneral
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 
 class SummaryView @JvmOverloads constructor(

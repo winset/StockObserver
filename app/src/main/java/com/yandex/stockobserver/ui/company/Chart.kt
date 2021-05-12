@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import com.yandex.stockobserver.genralInfo.StockCandle
+import com.yandex.stockobserver.model.StockCandle
 
 
 class Chart @JvmOverloads constructor(

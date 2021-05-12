@@ -28,7 +28,7 @@
             app:launchSingleTop="true">
             <argument
                 android:name="companyInformation"
-                app:argType="com.yandex.stockobserver.genralInfo.CompanyInfo" />
+                app:argType="com.yandex.stockobserver.model.CompanyInfo" />
         </action>
     </fragment>
 
@@ -39,7 +39,7 @@
         tools:layout="@layout/company_fragment">
         <argument
             android:name="companyInformation"
-            app:argType="com.yandex.stockobserver.genralInfo.CompanyInfo" />
+            app:argType="com.yandex.stockobserver.model.CompanyInfo" />
         <action
             android:id="@+id/action_companyFragment_to_mainFragment"
             app:destination="@id/mainFragment"

@@ -1,17 +1,16 @@
 package com.yandex.stockobserver.ui.company
 
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yandex.stockobserver.genralInfo.*
+import com.yandex.stockobserver.api.QuoteWebsocket
+import com.yandex.stockobserver.model.*
 import com.yandex.stockobserver.repository.CompanyRepository
 import com.yandex.stockobserver.utils.fromStringToDate
 import com.yandex.stockobserver.utils.minusOneWeek
 import com.yandex.stockobserver.utils.toString
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -40,10 +39,7 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
     val summary: LiveData<CompanyGeneral> = _summary
 
     private val _currentPrice = MutableLiveData<Double>()
-    val currentPrice:LiveData<Double> = _currentPrice
-
-    private val _margin = MutableLiveData<String>()
-    val margin:LiveData<String> = _margin
+    val currentPrice: LiveData<Double> = _currentPrice
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
@@ -60,6 +56,8 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
         getStockCandle(generalInfo.symbol)
         getNews(generalInfo.symbol, newsDateFrom, newsDateTo)
         getSummaryInfo(generalInfo.symbol)
+
+        getCurrentQuote()
     }
 
     private fun getStockCandle(symbol: String) {
@@ -68,10 +66,34 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
         }
     }
 
-    private fun getCurrentPrice(){
-
+    private fun getCurrentQuote() {
+        viewModelScope.launch {
+            companyRepository.initQuoteSocket(generalInfo.symbol)
+        }
+        val currentPrice = (Math.round(generalInfo.price*100).toDouble()/100)
+        _currentPrice.value = currentPrice
+        companyRepository.getCurrentPrice(generalInfo.symbol).addMessageHandler(object :
+            QuoteWebsocket.MessageHandler {
+            override fun handleMessage(quoteTicker: QuoteTicker) {
+                var res = quoteTicker.data.first().currentPrice
+                if (res >=0) {
+                    res = Math.round(res*100).toDouble()/100
+                    _currentPrice.postValue(res)
+                }
+            }
+        })
     }
 
+    private fun getWe(i: Double) {
+        _currentPrice.value = i
+    }
+
+    fun closeQuoteWebsocket() {
+        viewModelScope.launch {
+            companyRepository.closeQuoteWebSocket()
+        }
+    }
+    
     fun onFavoriteClick() {
         if (_isFavorite.value != null) {
             _isFavorite.value = !_isFavorite.value!!
@@ -98,7 +120,11 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
 
     private fun getSummaryInfo(symbol: String) {
         viewModelScope.launch {
-            _summary.value = companyRepository.getGeneralInfoBySymbol(symbol)
+            try {
+                _summary.value = companyRepository.getGeneralInfoBySymbol(symbol)
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
         }
     }
 
@@ -118,7 +144,7 @@ class CompanyViewModel @Inject constructor(private val companyRepository: Compan
                 if (news.isNotEmpty()) {
                     newNews.addAll(news)
                     _news.value = newNews
-                }else {
+                } else {
                     val newDateFrom =
                         fromStringToDate(dateFrom, format).minusOneWeek().toString(format)
                     news = companyRepository.getNews(symbol, newDateFrom, dateTo)

@@ -1,4 +1,4 @@
-package com.yandex.stockobserver.genralInfo
+package com.yandex.stockobserver.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

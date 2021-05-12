@@ -1,21 +1,15 @@
 package com.yandex.stockobserver.ui.company
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.yandex.stockobserver.databinding.NewsViewBinding
-import com.yandex.stockobserver.genralInfo.CompanyNewsItem
+import com.yandex.stockobserver.model.CompanyNewsItem
 import com.yandex.stockobserver.ui.adapter.NewsAdapter
 
 

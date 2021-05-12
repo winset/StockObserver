@@ -1,4 +1,4 @@
-package com.yandex.stockobserver.genralInfo
+package com.yandex.stockobserver.model
 
 
 class SimilarSymbol(

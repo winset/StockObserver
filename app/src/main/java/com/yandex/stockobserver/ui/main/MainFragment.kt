@@ -24,12 +24,10 @@ import androidx.viewpager.widget.ViewPager
 import com.yandex.stockobserver.R
 import com.yandex.stockobserver.StockApplication
 import com.yandex.stockobserver.databinding.MainFragmentBinding
-import com.yandex.stockobserver.di.injectViewModel
-import com.yandex.stockobserver.genralInfo.CompanyInfo
+import com.yandex.stockobserver.model.CompanyInfo
 import com.yandex.stockobserver.ui.adapter.HintAdapter
 import com.yandex.stockobserver.ui.adapter.StockAdapter
 import com.yandex.stockobserver.ui.adapter.StoksPagerAdapter
-import com.yandex.stockobserver.ui.company.CompanyFragmentArgs
 import javax.inject.Inject
 
 
@@ -56,7 +54,6 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       // viewModel = injectViewModel(viewModelFactory)
         StockApplication.stockComponent.inject(this)
         binding = MainFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -71,24 +68,9 @@ class MainFragment : Fragment() {
         initSearchView()
         setSearchHoldings()
         showError()
+        updateFavorite()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-      //  outState.putBundle("nav_state", findNavController().saveState())
-       /* if (args.isNeedToUpdate){
-            Log.d("123", "onSaveInstanceState: ")
-            viewModel.updateFavoriteInVooList(args.symbol, args.isFavorite)
-            viewModel.getFavorites()
-        }*/
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        if (savedInstanceState != null) {
-          //  findNavController().restoreState(savedInstanceState.getBundle("nav_state"))
-        }
-    }
 
     private fun initPager() {
         val recyclers = mutableListOf<RecyclerView>()
@@ -145,7 +127,13 @@ class MainFragment : Fragment() {
                 binding.companiesPager.currentItem = 0
             }
         }
+    }
 
+    private fun updateFavorite(){
+        if (args.isNeedToUpdate){
+            viewModel.updateFavoriteInVooList(args.symbol, args.isFavorite)
+            viewModel.getFavorites()
+        }
     }
 
     private fun initSearchView() {
@@ -335,15 +323,6 @@ class MainFragment : Fragment() {
         })
     }
 
-    override fun onDestroyView() {
-        Log.d("AAAA123", "onDestroyView: ")
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        Log.d("AAAA123", "onDestroy: ")
-        super.onDestroy()
-    }
 
     companion object {
         const val FAVORITE = "FAVORITE"

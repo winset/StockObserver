@@ -3,6 +3,7 @@ package com.yandex.stockobserver.ui.company
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,7 +23,6 @@ import com.yandex.stockobserver.databinding.CompanyFragmentBinding
 import com.yandex.stockobserver.di.injectViewModel
 import com.yandex.stockobserver.ui.adapter.CompanyPagerAdapter
 import javax.inject.Inject
-import kotlin.math.log
 
 
 class CompanyFragment : Fragment() {
@@ -39,18 +39,6 @@ class CompanyFragment : Fragment() {
     private val newsView by lazy { NewsView(requireContext()) }
     private val forecastView by lazy { ForecastView(requireContext()) }
 
-    private val screenStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent) {
-            if (intent.action == Intent.ACTION_SCREEN_ON) {
-                Log.i("Websocket", "Screen ON")
-                // openConnection()
-            } else if (intent.action == Intent.ACTION_SCREEN_OFF) {
-                Log.i("Websocket", "Screen OFF")
-                //closeConnection()
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,9 +48,6 @@ class CompanyFragment : Fragment() {
         StockApplication.stockComponent.inject(this)
         viewModel.setGeneralInfo(args.companyInformation)
         binding = CompanyFragmentBinding.inflate(inflater, container, false)
-
-
-        Log.d("CompanyFragment", "onCreateView: ")
         return binding.root
     }
 
@@ -77,7 +62,6 @@ class CompanyFragment : Fragment() {
         initNews(newsView)
         initIsFavorite()
         initSummary(summaryView)
-      //  initScreenBroadcast()
     }
 
     private fun getInitInfo() {
@@ -147,6 +131,9 @@ class CompanyFragment : Fragment() {
         viewModel.stockCandle.observe(viewLifecycleOwner, Observer {
             chartView.createView(it)
         })
+        viewModel.currentPrice.observe(viewLifecycleOwner, Observer {
+            chartView.updateQuoteTicker(it!!,args.companyInformation.prevClosePrice)
+        })
     }
 
     private fun initNews(newsView: NewsView) {
@@ -167,8 +154,10 @@ class CompanyFragment : Fragment() {
         })
     }
 
+
     override fun onResume() {
         Log.d("CompanyFragment", "onResume: ")
+        //open
         super.onResume()
     }
 
@@ -179,6 +168,7 @@ class CompanyFragment : Fragment() {
 
     override fun onStop() {
         Log.d("CompanyFragment", "onStop: ")
+        viewModel.closeQuoteWebsocket()
         super.onStop()
     }
 

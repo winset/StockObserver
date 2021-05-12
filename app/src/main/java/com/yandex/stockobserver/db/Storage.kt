@@ -1,9 +1,9 @@
 package com.yandex.stockobserver.db
 
 import androidx.room.withTransaction
-import com.yandex.stockobserver.genralInfo.Hint
-import com.yandex.stockobserver.genralInfo.entitys.CompanyInfoEntity
-import com.yandex.stockobserver.genralInfo.entitys.HintEntity
+import com.yandex.stockobserver.model.Hint
+import com.yandex.stockobserver.model.entitys.CompanyInfoEntity
+import com.yandex.stockobserver.model.entitys.HintEntity
 
 class Storage(private val database: StockDatabase) {
 

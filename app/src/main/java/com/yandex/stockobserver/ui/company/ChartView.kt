@@ -5,8 +5,10 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.yandex.stockobserver.R
 import com.yandex.stockobserver.databinding.ChartViewBinding
-import com.yandex.stockobserver.genralInfo.StockCandle
+import com.yandex.stockobserver.model.StockCandle
+import com.yandex.stockobserver.utils.marginToString
 
 class ChartView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
@@ -18,18 +20,18 @@ class ChartView @JvmOverloads constructor(
     private var binding:ChartViewBinding =
         ChartViewBinding.inflate(LayoutInflater.from(context),this)
 
-    init {
-        // addView(binding.root)
-    }
-
     fun createView(stockCandle: StockCandle) {
         Log.d(TAG, "createView: ")
         binding.chart.setData(stockCandle)
     }
 
-    fun updateQuoteTicker(price:String,margin:String){
-        binding.currentPrice.text = price
-        binding.currentMargin.text = margin
+    fun updateQuoteTicker(price:Double,prevClosePrice:Double){
+        if ((Math.round((price - prevClosePrice)*100).toDouble()/100) > 0){
+            binding.currentMargin.setTextColor(context.resources.getColor(R.color.green_text))
+        }else{
+            binding.currentMargin.setTextColor(context.resources.getColor(R.color.red_text))
+        }
+        binding.currentPrice.text = "$$price"
+        binding.currentMargin.text = marginToString(price,prevClosePrice)
     }
-
 }

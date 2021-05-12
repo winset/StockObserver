@@ -1,11 +1,10 @@
 package com.yandex.stockobserver.api
 
 import android.util.Log
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
+import com.google.gson.Gson
 import com.yandex.stockobserver.BuildConfig
-import com.yandex.stockobserver.genralInfo.ETFHoldings
-import com.yandex.stockobserver.genralInfo.QuoteTicker
+import com.yandex.stockobserver.model.QuoteTicker
+import com.yandex.stockobserver.model.dto.QuoteTickerDto
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
@@ -14,7 +13,6 @@ import javax.net.ssl.SSLSocketFactory
 
 class QuoteWebsocket {
     lateinit var webSocketClient: WebSocketClient
-
 
     fun initWebSocket(symbol: String) {
         val url = BuildConfig.WEB_SOKET_URL
@@ -33,7 +31,7 @@ class QuoteWebsocket {
             }
 
             override fun onMessage(message: String?) {
-                Log.d("WEB", "onMessage: ")
+                Log.d("WEB", "onMessage: " + message)
                 setUpQuotes(message)
             }
 
@@ -49,12 +47,13 @@ class QuoteWebsocket {
         }
     }
 
-    private fun setUpQuotes(message: String?) {
+    private  fun setUpQuotes(message: String?) {
+        Log.d("WEB", "setUpQuotes: " + message)
         message?.let {
-            val moshi = Moshi.Builder().build()
-            val adapter: JsonAdapter<QuoteTicker> = moshi.adapter(QuoteTicker::class.java)
-            val quoteTicker = adapter.fromJson(message)
-            Log.d("WEB", "setUpQuotes: " + message)
+            val quoteTicker = Gson().fromJson(message, QuoteTickerDto::class.java)
+            if (quoteTicker != null) {
+                messageHandler?.handleMessage(quoteTicker.convert())
+            }
         }
     }
 
@@ -74,5 +73,18 @@ class QuoteWebsocket {
         jObjectType.put("type", "unsubscribe")
         jObjectType.put("symbol", symbol)
     }
+
+
+    private var messageHandler: MessageHandler? = null
+
+
+    interface MessageHandler {
+        fun handleMessage(quoteTicker: QuoteTicker)
+    }
+
+    fun addMessageHandler(msgHandler: MessageHandler) {
+        this.messageHandler = msgHandler
+    }
+
 
 }

@@ -1,10 +1,7 @@
 package com.yandex.stockobserver.api
 
-import com.yandex.stockobserver.genralInfo.StockCandle
-import com.yandex.stockobserver.genralInfo.dto.*
+import com.yandex.stockobserver.model.dto.*
 import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Headers
 import retrofit2.http.Query
 
 const val CACHE_CONTROL_HEADER = "Cache-Control"

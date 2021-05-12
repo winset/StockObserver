@@ -1,9 +1,9 @@
 package com.yandex.stockobserver.repository
 
-import com.yandex.stockobserver.genralInfo.CompanyInfo
-import com.yandex.stockobserver.genralInfo.ETFHoldings
-import com.yandex.stockobserver.genralInfo.Hint
-import com.yandex.stockobserver.genralInfo.SearchSimilar
+import com.yandex.stockobserver.model.CompanyInfo
+import com.yandex.stockobserver.model.ETFHoldings
+import com.yandex.stockobserver.model.Hint
+import com.yandex.stockobserver.model.SearchSimilar
 import kotlinx.coroutines.flow.Flow
 
 interface HoldingRepository {

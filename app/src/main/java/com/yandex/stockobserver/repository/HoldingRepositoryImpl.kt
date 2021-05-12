@@ -1,24 +1,16 @@
 package com.yandex.stockobserver.repository
 
-import android.util.Log
 import com.yandex.stockobserver.api.FinhubApi
 import com.yandex.stockobserver.api.QuoteWebsocket
 import com.yandex.stockobserver.db.Storage
-import com.yandex.stockobserver.genralInfo.*
-import com.yandex.stockobserver.genralInfo.entitys.CompanyInfoEntity
+import com.yandex.stockobserver.model.*
+import com.yandex.stockobserver.model.entitys.CompanyInfoEntity
 import com.yandex.stockobserver.utils.marginToString
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 class HoldingRepositoryImpl @Inject constructor(
@@ -54,18 +46,20 @@ class HoldingRepositoryImpl @Inject constructor(
             val result = mutableListOf<CompanyInfo>()
             favorite.forEach {
                 val quote = getQuote(it.symbol)
-                    val margin  = marginToString(quote.currentPrice,quote.prevClosePrice)
-                    result.add(
-                        CompanyInfo(
-                            it.symbol,
-                            it.cusip,
-                            it.name,
-                            it.logo,
-                            quote.currentPrice,
-                            quote.prevClosePrice,
-                            margin,
-                            it.isFavorite)
+                val margin = marginToString(quote.currentPrice, quote.prevClosePrice)
+                val currentPrice = (Math.round(quote.currentPrice * 100).toDouble() / 100)
+                result.add(
+                    CompanyInfo(
+                        it.symbol,
+                        it.cusip,
+                        it.name,
+                        it.logo,
+                        currentPrice,
+                        quote.prevClosePrice,
+                        margin,
+                        it.isFavorite
                     )
+                )
             }
             emit(result)
         }.flowOn(Dispatchers.IO)
@@ -111,14 +105,15 @@ class HoldingRepositoryImpl @Inject constructor(
         subList.forEachIndexed { index, holdingsItem ->
             companyInfo.add(getGeneralInfoBySymbol(holdingsItem.symbol))
             quotes.add(getQuote(holdingsItem.symbol))
-            val margin = marginToString(quotes[index].currentPrice,quotes[index].prevClosePrice)
+            val margin = marginToString(quotes[index].currentPrice, quotes[index].prevClosePrice)
+            val currentPrice = (Math.round(quotes[index].currentPrice * 100).toDouble() / 100)
             result.add(
                 CompanyInfo(
                     holdingsItem.symbol,
                     holdingsItem.cusip,
                     companyInfo[index].name,
                     companyInfo[index].logo,
-                    quotes[index].currentPrice,
+                    currentPrice,
                     quotes[index].prevClosePrice,
                     margin,
                     isFavorite(holdingsItem.symbol)

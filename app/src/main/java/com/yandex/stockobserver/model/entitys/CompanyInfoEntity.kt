@@ -1,10 +1,10 @@
-package com.yandex.stockobserver.genralInfo.entitys
+package com.yandex.stockobserver.model.entitys
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.yandex.stockobserver.db.TableNames
-import com.yandex.stockobserver.genralInfo.CompanyInfo
+import com.yandex.stockobserver.model.CompanyInfo
 
 @Entity(tableName = TableNames.GENERAL_INFO)
 class CompanyInfoEntity(

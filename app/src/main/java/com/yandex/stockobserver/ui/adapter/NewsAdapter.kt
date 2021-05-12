@@ -3,7 +3,7 @@ package com.yandex.stockobserver.ui.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.yandex.stockobserver.genralInfo.CompanyNewsItem
+import com.yandex.stockobserver.model.CompanyNewsItem
 
 class NewsAdapter(private val onItemClick: (CompanyNewsItem) -> Unit) :
     RecyclerView.Adapter<NewsHolder>()  {
